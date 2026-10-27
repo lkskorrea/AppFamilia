@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Family App Modern</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'] 
+                    },
+                    colors: {
+                        glassLight: 'rgba(255, 255, 255, 0.7)',
+                        glassDark: 'rgba(30, 30, 30, 0.6)',
+                        borderLight: 'rgba(255, 255, 255, 0.4)',
+                        borderDark: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'icon': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #d1d5db; 
+            margin: 0; padding: 0; min-height: 100vh; overflow: hidden;
+            background-image: radial-gradient(circle at top right, #e5e7eb, #9ca3af);
+        }
+        .dark body {
+            background-image: radial-gradient(circle at top right, #374151, #111827);
+        }
+        
+        /* Modern Native App Container */
+        #app-container {
+            width: 100vw; height: 100vh;
+            position: relative; overflow: hidden; 
+            display: flex; flex-direction: column;
+        }
+
+        /* App Background (Wallpaper) */
+        .app-bg {
+            position: absolute; inset: 0; z-index: 0;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        }
+        .dark .app-bg {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 30, 30, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-header {
+            background: rgba(15, 15, 15, 0.75);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .dark .glass-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Screen Transitions */
+        .screen {
+            position: absolute; inset: 0; z-index: 10; 
+            display: flex; flex-direction: column;
+            opacity: 0; transform: scale(0.95) translateY(10px); 
+            pointer-events: none; 
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .screen.active { 
+            opacity: 1; transform: scale(1) translateY(0); 
+            pointer-events: auto; z-index: 20; 
+        }
+
+        .app-screen::-webkit-scrollbar { display: none; }
+        .app-screen { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* App Icons */
+        .app-icon { 
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; 
+            gap: 0.5rem; cursor: pointer; transition: transform 0.15s ease; 
+        }
+        .app-icon:active { transform: scale(0.9); }
+        .icon-box { 
+            width: 68px; height: 68px; border-radius: 1.35rem; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.75rem; color: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            position: relative; overflow: hidden;
+        }
+        .icon-box::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            border-radius: inherit; pointer-events: none;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; 
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);
+        }
+        .dark #loading-overlay { background: rgba(0,0,0,0.8); }
+        .spinner { border: 3px solid rgba(150,150,150,0.2); border-left-color: #3b82f6; border-radius: 50%; width: 32px; height: 32px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom inputs reset */
+        input:focus, textarea:focus, select:focus { outline: none; }
+
+        /* Responsive constraints for native web app feel */
+        .content-container {
+            max-width: 56rem; /* 896px */
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Chat feed constraints */
+        #chat-feed {
+            align-items: center;
+        }
+        #chat-feed > div {
+            width: 100%;
+            max-width: 56rem;
+        }
+    </style>
+</head>
+<body class="dark text-gray-900 dark:text-gray-100">
+
+    <div id="app-container" class="dark">
+        <div class="app-bg"></div>
+        
+        <div id="loading-overlay">
+            <div class="spinner mb-4"></div>
+            <p class="font-medium text-sm text-gray-600 dark:text-gray-300">Conectando...</p>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- HOME SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-home" class="screen active pt-8 sm:pt-12 overflow-y-auto">
+            <div class="content-container px-6 sm:px-8 py-6 mt-4 flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-1 text-gray-900 dark:text-white">Família</h1>
+                    <p class="text-sm sm:text-lg font-medium text-gray-500 dark:text-gray-400">Bem-vindo(a) de volta</p>
+                </div>
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 p-[2px] shadow-lg">
+                    <div class="w-full h-full rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-xl sm:text-2xl"><i class="fas fa-home text-blue-500"></i></div>
+                </div>
+            </div>
+            
+            <div class="content-container px-6 pb-12">
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-y-10 gap-x-4 sm:gap-6 mt-8">
+                    <div class="app-icon" onclick="openScreen('calendar', 'bg-gradient-to-br from-red-400 to-rose-600')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-red-400 to-rose-600"><i class="fas fa-calendar-day"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Calendário</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('contacts', 'bg-gradient-to-br from-emerald-400 to-green-600')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-emerald-400 to-green-600"><i class="fas fa-phone-alt"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Telefones</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('photos', 'bg-gradient-to-br from-purple-400 to-fuchsia-600')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-purple-400 to-fuchsia-600"><i class="fas fa-image"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Fotos</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('documents', 'bg-gradient-to-br from-blue-400 to-cyan-600')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-blue-400 to-cyan-600"><i class="fas fa-folder-open"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Documentos</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('messages', 'bg-gradient-to-br from-teal-400 to-emerald-500')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-teal-400 to-emerald-500"><i class="fas fa-comment-dots"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Mensagens</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('shopping', 'bg-gradient-to-br from-orange-400 to-amber-500')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-orange-400 to-amber-500"><i class="fas fa-shopping-basket"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Compras</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('budget', 'bg-gradient-to-br from-yellow-400 to-yellow-600')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-yellow-400 to-yellow-600"><i class="fas fa-wallet"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Orçamento</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('birthdays', 'bg-gradient-to-br from-pink-400 to-rose-500')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-pink-400 to-rose-500"><i class="fas fa-gift"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Aniversários</span>
+                    </div>
+                    <div class="app-icon" onclick="openScreen('settings', 'bg-gradient-to-br from-gray-400 to-gray-600')">
+                        <div class="icon-box w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-3xl bg-gradient-to-br from-gray-400 to-gray-600"><i class="fas fa-cog"></i></div>
+                        <span class="text-[12px] sm:text-sm font-medium text-gray-700 dark:text-gray-300">Ajustes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 1. COMPRAS SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-shopping" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-orange-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Compras</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 flex flex-col relative z-20">
+                <div class="content-container">
+                    <form id="form-shopping" class="flex space-x-3 mb-8">
+                        <input type="text" id="shop-input" placeholder="Adicionar item..." required class="flex-1 glass-input rounded-2xl px-5 py-4 text-base focus:ring-2 focus:ring-orange-500 shadow-sm transition">
+                        <button type="submit" class="bg-gradient-to-br from-orange-400 to-amber-500 text-white px-6 py-4 rounded-2xl shadow-lg active:scale-95 transition text-lg"><i class="fas fa-plus"></i></button>
+                    </form>
+                    <ul id="shop-list" class="space-y-4"></ul>
+                </div>
+            </main>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 2. ORÇAMENTO SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-budget" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-yellow-600 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Orçamento</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 relative z-20">
+                <div class="content-container">
+                    <div class="glass-panel rounded-3xl p-8 text-center mb-8 shadow-glass relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-40 h-40 bg-yellow-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 dark:opacity-10 animate-pulse"></div>
+                        <h2 class="text-sm uppercase tracking-wider font-semibold text-gray-500 dark:text-gray-400">Saldo Atual</h2>
+                        <p id="budget-balance" class="text-5xl font-bold mt-3 tracking-tight">R$ 0,00</p>
+                    </div>
+                    <form id="form-budget" class="glass-panel rounded-3xl p-6 mb-8 space-y-4 shadow-sm">
+                        <div class="flex space-x-3">
+                            <select id="budget-type" class="glass-input rounded-2xl px-4 py-4 text-base font-medium w-1/3">
+                                <option value="income">Receita (+)</option>
+                                <option value="expense">Despesa (-)</option>
+                            </select>
+                            <input type="number" step="0.01" id="budget-amount" placeholder="0,00" required class="flex-1 glass-input rounded-2xl px-5 py-4 text-base font-bold">
+                        </div>
+                        <input type="text" id="budget-desc" placeholder="Descrição (ex: Mercado)" required class="w-full glass-input rounded-2xl px-5 py-4 text-base">
+                        <button type="submit" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white font-bold py-4 rounded-2xl shadow-md active:scale-95 transition text-lg">Registrar Transação</button>
+                    </form>
+                    <h3 class="text-base font-bold mb-4 px-2 text-gray-700 dark:text-gray-300">Transações Recentes</h3>
+                    <div id="budget-list" class="space-y-4"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 3. MENSAGENS SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-messages" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-teal-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-teal-400 to-emerald-500 flex items-center justify-center text-white text-sm"><i class="fas fa-users"></i></div>
+                        <h1 class="font-bold text-xl">Família</h1>
+                    </div>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main id="chat-feed" class="flex-1 overflow-y-auto app-screen p-6 space-y-5 flex flex-col relative z-20 pb-28"></main>
+            <div class="absolute bottom-0 left-0 right-0 p-6 glass-header z-30 border-t border-white/20 dark:border-white/5">
+                <div class="content-container">
+                    <form id="form-chat" class="flex items-center space-x-3">
+                        <input type="text" id="chat-input" placeholder="Digite uma mensagem..." required autocomplete="off" class="flex-1 glass-input rounded-full px-6 py-4 text-base shadow-inner focus:ring-2 focus:ring-teal-500 transition">
+                        <button type="submit" class="bg-gradient-to-br from-teal-400 to-emerald-500 text-white w-14 h-14 rounded-full flex items-center justify-center shrink-0 shadow-lg active:scale-90 transition text-xl"><i class="fas fa-arrow-up"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 4. TELEFONES SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-contacts" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-emerald-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Telefones</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 relative z-20">
+                <div class="content-container">
+                    <form id="form-contact" class="glass-panel rounded-3xl p-6 mb-8 space-y-4 shadow-sm">
+                        <input type="text" id="contact-name" placeholder="Nome / Especialidade" required class="w-full glass-input rounded-2xl px-5 py-4 text-base">
+                        <div class="flex space-x-3">
+                            <input type="tel" id="contact-phone" placeholder="Número" required class="flex-1 glass-input rounded-2xl px-5 py-4 text-base">
+                            <button type="submit" class="bg-gradient-to-br from-emerald-400 to-green-500 text-white px-6 py-4 rounded-2xl shadow-md active:scale-95 transition text-lg"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </form>
+                    <div id="contact-list" class="space-y-4"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 5. ANIVERSÁRIOS SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-birthdays" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-pink-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Aniversários</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 relative z-20">
+                <div class="content-container">
+                    <form id="form-birthday" class="glass-panel rounded-3xl p-6 mb-8 flex space-x-3 shadow-sm">
+                        <input type="text" id="bday-name" placeholder="Nome do aniversariante" required class="flex-1 min-w-0 glass-input rounded-2xl px-5 py-4 text-base">
+                        <input type="date" id="bday-date" required class="w-[150px] glass-input rounded-2xl px-4 py-4 text-base font-medium">
+                        <button type="submit" class="bg-gradient-to-br from-pink-400 to-rose-500 text-white px-6 py-4 rounded-2xl shadow-md active:scale-95 transition text-lg"><i class="fas fa-plus"></i></button>
+                    </form>
+                    <div id="bday-list" class="space-y-4"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 6. CALENDÁRIO SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-calendar" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-red-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Calendário</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 relative z-20">
+                <div class="content-container">
+                    <form id="form-event" class="glass-panel rounded-3xl p-6 mb-8 space-y-4 shadow-sm">
+                        <input type="text" id="event-name" placeholder="Título do Evento" required class="w-full glass-input rounded-2xl px-5 py-4 text-base">
+                        <div class="flex space-x-3">
+                            <input type="date" id="event-date" required class="flex-1 glass-input rounded-2xl px-5 py-4 text-base font-medium">
+                            <button type="submit" class="bg-gradient-to-br from-red-400 to-rose-600 text-white px-6 py-4 rounded-2xl shadow-md active:scale-95 transition text-lg"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </form>
+                    <h2 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 px-2">Próximos Eventos</h2>
+                    <div id="event-list" class="space-y-4"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 7. FOTOS SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-photos" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-purple-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Fotos</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 relative z-20">
+                <div class="content-container">
+                    <form id="form-photo" class="mb-8 flex space-x-3">
+                        <input type="url" id="photo-url" placeholder="URL da imagem (https://...)" required class="flex-1 glass-input rounded-2xl px-5 py-4 text-base shadow-sm transition">
+                        <button type="submit" class="bg-gradient-to-br from-purple-400 to-fuchsia-600 text-white px-6 py-4 rounded-2xl shadow-lg active:scale-95 transition text-lg"><i class="fas fa-cloud-upload-alt"></i></button>
+                    </form>
+                    <div id="photo-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 8. DOCUMENTOS SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-documents" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-blue-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Anotações</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 space-y-6 relative z-20">
+                <div class="content-container">
+                    <form id="form-document" class="glass-panel rounded-3xl p-6 shadow-sm space-y-4 mb-8">
+                        <input type="text" id="doc-title" placeholder="Título da anotação" required class="w-full glass-input rounded-2xl px-5 py-4 text-base font-bold">
+                        <textarea id="doc-text" rows="4" placeholder="Escreva aqui os detalhes..." required class="w-full glass-input rounded-2xl px-5 py-4 text-base resize-none"></textarea>
+                        <button type="submit" class="w-full bg-gradient-to-br from-blue-400 to-cyan-500 text-white font-bold py-4 rounded-2xl shadow-md active:scale-95 transition text-lg">Salvar Anotação</button>
+                    </form>
+                    <div id="document-list" class="space-y-6"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 9. CONFIGURAÇÕES SCREEN -->
+        <!-- ========================================== -->
+        <div id="screen-settings" class="screen">
+            <header class="glass-header pt-6 pb-4 px-6 z-30">
+                <div class="content-container flex items-center justify-between">
+                    <button onclick="goBack()" class="w-10 h-10 flex items-center justify-start text-gray-500 text-2xl active:opacity-50 transition"><i class="fas fa-chevron-left"></i></button>
+                    <h1 class="font-bold text-xl">Ajustes</h1>
+                    <div class="w-10"></div>
+                </div>
+            </header>
+            <main class="flex-1 overflow-y-auto app-screen p-6 relative z-20">
+                <div class="content-container">
+                    <div class="glass-panel rounded-3xl shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-700/50">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 text-lg"><i class="fas fa-moon"></i></div>
+                                <span class="font-semibold text-base">Modo Escuro</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-dark" checked class="sr-only peer" onchange="toggleDarkMode()">
+                                <div class="w-14 h-7 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
+                        <div class="p-6 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-300 text-lg"><i class="fas fa-id-badge"></i></div>
+                                <span class="font-semibold text-base">ID da Família</span>
+                            </div>
+                            <span id="user-display-id" class="text-sm text-gray-500 font-mono font-bold tracking-widest">...</span>
+                        </div>
+                    </div>
+                    <div class="mt-12 flex justify-center">
+                        <div class="text-center">
+                            <div class="w-20 h-20 rounded-[2rem] bg-gradient-to-tr from-blue-400 to-indigo-500 flex items-center justify-center text-white text-3xl mx-auto shadow-xl mb-4"><i class="fas fa-home"></i></div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 font-bold">FamilyWall Sync OS</p>
+                            <p class="text-xs text-gray-400 mt-1">Versão 3.0 (Native Web)</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <!-- Firebase & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Environment Variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'familia-7c1eb';
+        const fbConfig = {
+            apiKey: "AIzaSyDlUDsSG9Il_J4EZz7tIB1mbbAOxnTBaJM",
+            authDomain: "familia-7c1eb.firebaseapp.com",
+            projectId: "familia-7c1eb",
+            storageBucket: "familia-7c1eb.firebasestorage.app",
+            messagingSenderId: "376403066544",
+            appId: "1:376403066544:web:52d9d6670022eafa0d0575"
+        };
+        
+        let db, auth, currentUser;
+        
+        // UI Logic
+        window.openScreen = (screenId, headerGradient = '') => {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById('screen-' + screenId);
+            target.classList.add('active');
+            
+            if(screenId === 'messages') {
+                setTimeout(() => {
+                    const feed = document.getElementById('chat-feed');
+                    feed.scrollTop = feed.scrollHeight;
+                }, 100);
+            }
+        };
+
+        window.goBack = () => {
+            window.openScreen('home');
+        };
+
+        window.toggleDarkMode = () => {
+            const isDark = document.getElementById('toggle-dark').checked;
+            const body = document.body;
+            const appContainer = document.getElementById('app-container');
+            if (isDark) { body.classList.add('dark'); appContainer.classList.add('dark'); } 
+            else { body.classList.remove('dark'); appContainer.classList.remove('dark'); }
+        };
+
+        // Core Init
+        async function initApp() {
+            try {
+                const app = initializeApp(fbConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                currentUser = auth.currentUser;
+                document.getElementById('user-display-id').innerText = currentUser.uid.substring(0, 8).toUpperCase();
+                
+                // Fade out loading
+                const loader = document.getElementById('loading-overlay');
+                loader.style.opacity = '0';
+                loader.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => loader.style.display = 'none', 500);
+
+                setupListeners();
+                
+            } catch (err) {
+                console.error("Firebase init failed", err);
+                document.getElementById('loading-overlay').innerHTML = `<p class="text-red-500 font-bold p-4 text-center">Modo Demo<br>Sem conexão</p>`;
+                setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 2000);
+            }
+        }
+
+        // Firebase Path Rule: /artifacts/{appId}/public/data/{collectionName}
+        const getColRef = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
+        const getDocRef = (colName, docId) => doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+
+        // ==========================================
+        // FORMS SUBMIT
+        // ==========================================
+        
+        // 1. Compras
+        document.getElementById('form-shopping').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const input = document.getElementById('shop-input');
+            const text = input.value.trim();
+            if (text) {
+                await addDoc(getColRef('shopping'), { text, done: false, timestamp: Date.now() });
+                input.value = '';
+            }
+        });
+        window.toggleShopItem = async (id, status) => { if(currentUser) await updateDoc(getDocRef('shopping', id), { done: !status }); };
+        window.deleteShopItem = async (id) => { if(currentUser) await deleteDoc(getDocRef('shopping', id)); };
+
+        // 2. Orçamento
+        document.getElementById('form-budget').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const type = document.getElementById('budget-type').value;
+            const amount = parseFloat(document.getElementById('budget-amount').value);
+            const desc = document.getElementById('budget-desc').value.trim();
+            if (amount && desc) {
+                await addDoc(getColRef('budget'), { type, amount, desc, timestamp: Date.now(), user: currentUser.uid.substring(0,4) });
+                document.getElementById('budget-amount').value = ''; document.getElementById('budget-desc').value = '';
+            }
+        });
+        window.deleteTransaction = async (id) => { if(currentUser) await deleteDoc(getDocRef('budget', id)); };
+
+        // 3. Mensagens
+        document.getElementById('form-chat').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const input = document.getElementById('chat-input');
+            if (input.value.trim()) {
+                await addDoc(getColRef('messages'), { text: input.value.trim(), senderId: currentUser.uid, timestamp: Date.now() });
+                input.value = '';
+            }
+        });
+
+        // 4. Contatos
+        document.getElementById('form-contact').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const name = document.getElementById('contact-name').value;
+            const phone = document.getElementById('contact-phone').value;
+            if (name && phone) {
+                await addDoc(getColRef('contacts'), { name, phone, timestamp: Date.now() });
+                e.target.reset();
+            }
+        });
+        window.deleteContact = async (id) => { if(currentUser) await deleteDoc(getDocRef('contacts', id)); };
+
+        // 5. Aniversários
+        document.getElementById('form-birthday').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const name = document.getElementById('bday-name').value;
+            const date = document.getElementById('bday-date').value;
+            if (name && date) {
+                await addDoc(getColRef('birthdays'), { name, date, timestamp: Date.now() });
+                e.target.reset();
+            }
+        });
+        window.deleteBday = async (id) => { if(currentUser) await deleteDoc(getDocRef('birthdays', id)); };
+
+        // 6. Calendário
+        document.getElementById('form-event').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const name = document.getElementById('event-name').value;
+            const date = document.getElementById('event-date').value;
+            if (name && date) {
+                await addDoc(getColRef('events'), { name, date, timestamp: Date.now() });
+                e.target.reset();
+            }
+        });
+        window.deleteEvent = async (id) => { if(currentUser) await deleteDoc(getDocRef('events', id)); };
+
+        // 7. Fotos
+        document.getElementById('form-photo').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const url = document.getElementById('photo-url').value.trim();
+            if (url) {
+                await addDoc(getColRef('photos'), { url, timestamp: Date.now() });
+                document.getElementById('photo-url').value = '';
+            }
+        });
+        window.deletePhoto = async (id) => { if(currentUser) await deleteDoc(getDocRef('photos', id)); };
+
+        // 8. Documentos
+        document.getElementById('form-document').addEventListener('submit', async (e) => {
+            e.preventDefault(); if(!currentUser) return;
+            const title = document.getElementById('doc-title').value;
+            const content = document.getElementById('doc-text').value;
+            if (title && content) {
+                await addDoc(getColRef('documents'), { title, content, timestamp: Date.now() });
+                e.target.reset();
+            }
+        });
+        window.deleteDocItem = async (id) => { if(currentUser) await deleteDoc(getDocRef('documents', id)); };
+
+        // ==========================================
+        // REALTIME LISTENERS
+        // ==========================================
+        function setupListeners() {
+            if(!currentUser) return;
+            
+            // 1. Compras
+            onSnapshot(getColRef('shopping'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => a.timestamp - b.timestamp);
+                
+                const list = document.getElementById('shop-list'); list.innerHTML = '';
+                items.forEach(item => {
+                    list.innerHTML += `
+                        <li class="glass-panel p-4 rounded-2xl flex items-center justify-between shadow-sm transition-all ${item.done ? 'opacity-60 scale-[0.98]' : ''}">
+                            <div class="flex items-center flex-1 cursor-pointer group" onclick="toggleShopItem('${item.id}', ${item.done})">
+                                <div class="w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center transition-colors ${item.done ? 'border-orange-500 bg-orange-500 text-white' : 'border-gray-400 group-hover:border-orange-400'}">
+                                    ${item.done ? '<i class="fas fa-check text-[10px]"></i>' : ''}
+                                </div>
+                                <span class="text-sm font-medium ${item.done ? 'line-through text-gray-500' : ''}">${item.text}</span>
+                            </div>
+                            <button onclick="deleteShopItem('${item.id}')" class="text-gray-400 hover:text-red-500 p-2"><i class="fas fa-trash-alt"></i></button>
+                        </li>`;
+                });
+            }, err => console.error(err));
+
+            // 2. Orçamento
+            onSnapshot(getColRef('budget'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => b.timestamp - a.timestamp);
+                
+                const list = document.getElementById('budget-list'); let balance = 0; list.innerHTML = '';
+                items.forEach(t => {
+                    const isIncome = t.type === 'income'; balance += isIncome ? t.amount : -t.amount;
+                    const dateStr = new Date(t.timestamp).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+                    list.innerHTML += `
+                        <div class="glass-panel p-4 rounded-2xl flex justify-between items-center shadow-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center ${isIncome ? 'bg-green-100 dark:bg-green-900/30 text-green-500' : 'bg-red-100 dark:bg-red-900/30 text-red-500'}">
+                                    <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'} text-lg"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold">${t.desc}</p>
+                                    <p class="text-[11px] text-gray-500">${dateStr}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span class="font-bold text-sm tracking-tight ${isIncome ? 'text-green-500' : ''}">${isIncome ? '+' : '-'} R$ ${t.amount.toFixed(2)}</span>
+                                <button onclick="deleteTransaction('${t.id}')" class="text-[10px] text-red-500 mt-1 uppercase font-semibold opacity-60">Remover</button>
+                            </div>
+                        </div>`;
+                });
+                const balEl = document.getElementById('budget-balance');
+                balEl.innerText = `R$ ${balance.toFixed(2)}`;
+                balEl.className = `text-4xl font-bold mt-2 tracking-tight ${balance >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-500'}`;
+            }, err => console.error(err));
+
+            // 3. Mensagens
+            onSnapshot(getColRef('messages'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => a.timestamp - b.timestamp);
+                
+                const feed = document.getElementById('chat-feed'); feed.innerHTML = '';
+                items.forEach(m => {
+                    const isMe = m.senderId === currentUser.uid;
+                    feed.innerHTML += `
+                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                            ${!isMe ? `<span class="text-[10px] text-gray-500 ml-2 mb-1 uppercase font-semibold">User ${m.senderId.substring(0,4)}</span>` : ''}
+                            <div class="max-w-[75%] px-4 py-2.5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${isMe ? 'bg-gradient-to-br from-teal-500 to-emerald-500 text-white rounded-tr-sm' : 'glass-panel rounded-tl-sm'}">
+                                ${m.text}
+                            </div>
+                        </div>`;
+                });
+                feed.scrollTop = feed.scrollHeight;
+            }, err => console.error(err));
+
+            // 4. Contatos
+            onSnapshot(getColRef('contacts'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => a.name.localeCompare(b.name));
+                
+                const list = document.getElementById('contact-list'); list.innerHTML = '';
+                items.forEach(c => {
+                    list.innerHTML += `
+                        <div class="glass-panel p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center text-white text-lg font-bold shadow-md">
+                                    ${c.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div><h3 class="font-semibold text-[15px]">${c.name}</h3><p class="text-xs text-gray-500 font-medium">${c.phone}</p></div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <a href="tel:${c.phone}" class="w-9 h-9 rounded-full glass-input flex items-center justify-center text-green-500"><i class="fas fa-phone"></i></a>
+                                <button onclick="deleteContact('${c.id}')" class="w-9 h-9 rounded-full glass-input flex items-center justify-center text-red-400"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>`;
+                });
+            }, err => console.error(err));
+
+            // 5. Aniversários
+            onSnapshot(getColRef('birthdays'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => {
+                    const da = new Date(a.date); const dbDate = new Date(b.date);
+                    return da.getMonth() - dbDate.getMonth() || da.getDate() - dbDate.getDate();
+                });
+                
+                const list = document.getElementById('bday-list'); list.innerHTML = '';
+                const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+                items.forEach(b => {
+                    const [y, m, d] = b.date.split('-');
+                    list.innerHTML += `
+                        <div class="glass-panel p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                            <div class="flex items-center">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-500 flex flex-col items-center justify-center text-white mr-4 shadow-md">
+                                    <span class="text-lg font-bold leading-none">${d}</span>
+                                    <span class="text-[10px] font-semibold uppercase tracking-wider">${months[parseInt(m)-1]}</span>
+                                </div>
+                                <h3 class="font-semibold text-[15px]">${b.name}</h3>
+                            </div>
+                            <button onclick="deleteBday('${b.id}')" class="text-gray-400 hover:text-red-500 p-2"><i class="fas fa-trash-alt"></i></button>
+                        </div>`;
+                });
+            }, err => console.error(err));
+
+            // 6. Eventos
+            onSnapshot(getColRef('events'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => a.date.localeCompare(b.date));
+                
+                const list = document.getElementById('event-list'); list.innerHTML = '';
+                items.forEach(ev => {
+                    const dStr = new Date(ev.date + 'T12:00:00').toLocaleDateString('pt-BR');
+                    list.innerHTML += `
+                        <div class="glass-panel p-4 rounded-2xl flex items-center justify-between shadow-sm relative overflow-hidden">
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-red-400 to-rose-600"></div>
+                            <div class="pl-3">
+                                <h3 class="font-semibold text-[15px]">${ev.name}</h3>
+                                <p class="text-xs text-gray-500 font-medium mt-1"><i class="far fa-calendar-alt mr-1"></i> ${dStr}</p>
+                            </div>
+                            <button onclick="deleteEvent('${ev.id}')" class="text-gray-400 hover:text-red-500 p-2"><i class="fas fa-trash-alt"></i></button>
+                        </div>`;
+                });
+            }, err => console.error(err));
+
+            // 7. Fotos
+            onSnapshot(getColRef('photos'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => b.timestamp - a.timestamp);
+                
+                const grid = document.getElementById('photo-grid'); grid.innerHTML = '';
+                items.forEach(p => {
+                    grid.innerHTML += `
+                        <div class="relative group aspect-square rounded-3xl overflow-hidden shadow-md glass-panel">
+                            <img src="${p.url}" alt="Foto" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onerror="this.src='https://placehold.co/400x400/1e1e1e/ffffff?text=Image+Error'">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm">
+                                <button onclick="deletePhoto('${p.id}')" class="bg-red-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg active:scale-90 transition"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                });
+            }, err => console.error(err));
+
+            // 8. Documentos
+            onSnapshot(getColRef('documents'), (snap) => {
+                let items = []; snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+                items.sort((a, b) => b.timestamp - a.timestamp);
+                
+                const list = document.getElementById('document-list'); list.innerHTML = '';
+                items.forEach(docItem => {
+                    const dStr = new Date(docItem.timestamp).toLocaleDateString('pt-BR');
+                    list.innerHTML += `
+                        <div class="glass-panel p-5 rounded-3xl shadow-sm relative group">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-[16px] text-blue-500 dark:text-blue-400">${docItem.title}</h3>
+                                <button onclick="deleteDocItem('${docItem.id}')" class="text-gray-400 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                            <p class="text-[14px] text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">${docItem.content}</p>
+                            <p class="text-[10px] text-gray-400 mt-4 font-medium uppercase tracking-wider">Criado em ${dStr}</p>
+                        </div>`;
+                });
+            }, err => console.error(err));
+        }
+
+        // Start
+        initApp();
+
+    </script>
+</body>
+</html>
