@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Enlevo</title>
+    
+    <!-- PWA Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#eecfd4">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
@@ -15,8 +21,8 @@
                         pastel: {
                             bg: '#fdfbf7',
                             card: '#ffffff',
-                            primary: '#eecfd4', // rose pastel
-                            secondary: '#d1e8e2', // mint pastel
+                            primary: '#eecfd4',
+                            secondary: '#d1e8e2',
                             text: '#5c5c5c'
                         },
                         dark: {
@@ -30,16 +36,15 @@
         }
     </script>
     <style>
-        /* Esconder barra de rolagem mas manter funcionalidade */
         ::-webkit-scrollbar { display: none; }
         * { -ms-overflow-style: none; scrollbar-width: none; }
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
     </style>
 </head>
-<body class="bg-pastel-bg dark:bg-dark-bg text-pastel-text dark:text-dark-text transition-colors duration-300 font-sans min-h-screen flex flex-col">
+<body class="bg-pastel-bg dark:bg-dark-bg text-pastel-text dark:text-dark-text transition-colors duration-300 font-sans h-screen overflow-hidden flex flex-col">
 
     <!-- Tela de Login -->
-    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
+    <div id="login-screen" class="flex flex-col items-center justify-center h-full p-6 relative z-50 bg-pastel-bg dark:bg-dark-bg">
         <div class="bg-pastel-card dark:bg-dark-card p-8 rounded-3xl shadow-sm w-full max-w-sm border border-slate-100 dark:border-slate-800 transition-colors">
             <div class="flex justify-center mb-4 text-rose-400">
                 <i data-lucide="feather" class="w-14 h-14"></i>
@@ -68,10 +73,10 @@
     </div>
 
     <!-- Tela Principal do App -->
-    <div id="app-screen" class="hidden flex-1 flex flex-col h-screen overflow-hidden">
+    <div id="app-screen" class="hidden flex-1 flex flex-col h-full relative">
         
         <!-- Header -->
-        <header class="bg-pastel-card dark:bg-dark-card shadow-sm p-4 flex justify-between items-center z-10 transition-colors">
+        <header class="fixed top-0 left-0 right-0 bg-pastel-card dark:bg-dark-card shadow-sm p-4 flex justify-between items-center z-30 transition-colors h-16">
             <h1 class="text-2xl font-light tracking-wide flex items-center gap-2 text-rose-400">
                 <i data-lucide="feather" class="w-6 h-6"></i> Enlevo
             </h1>
@@ -87,16 +92,14 @@
         </header>
 
         <!-- Conteúdo Rolável -->
-        <main class="flex-1 overflow-y-auto p-4 pb-28 relative">
+        <main class="flex-1 overflow-y-auto w-full pt-20 pb-24 px-4">
             
             <!-- Aba: Álbuns -->
-            <section id="tab-albuns" class="tab-content hidden space-y-4">
+            <section id="tab-albuns" class="tab-content space-y-4">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium">Nossos Álbuns</h2>
                 </div>
-                <div id="albuns-list" class="grid grid-cols-2 gap-4">
-                    <!-- Cards de Albuns injetados aqui -->
-                </div>
+                <div id="albuns-list" class="grid grid-cols-2 gap-4"></div>
             </section>
 
             <!-- Aba: Metas -->
@@ -104,9 +107,7 @@
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium">Nossas Metas</h2>
                 </div>
-                <div id="metas-list" class="space-y-4">
-                    <!-- Cards de Metas injetados aqui -->
-                </div>
+                <div id="metas-list" class="space-y-4"></div>
             </section>
 
             <!-- Aba: Telefones -->
@@ -114,9 +115,7 @@
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium">Contatos Importantes</h2>
                 </div>
-                <div id="telefones-list" class="space-y-3">
-                    <!-- Contatos injetados aqui -->
-                </div>
+                <div id="telefones-list" class="space-y-3"></div>
             </section>
 
             <!-- Aba: Documentos -->
@@ -128,34 +127,32 @@
                     <i data-lucide="info" class="w-4 h-4 mt-0.5 shrink-0"></i>
                     <p>Limite de tamanho por arquivo: 800KB. Suporta PDF, DOCX, Imagens.</p>
                 </div>
-                <div id="documentos-list" class="space-y-3">
-                    <!-- Documentos injetados aqui -->
-                </div>
+                <div id="documentos-list" class="space-y-3"></div>
             </section>
 
         </main>
 
         <!-- Botão Flutuante (FAB) -->
-        <button id="fab-btn" class="fixed bottom-24 right-6 bg-rose-400 text-white p-4 rounded-full shadow-lg hover:bg-rose-500 transition-transform active:scale-95 z-20">
+        <button id="fab-btn" class="fixed bottom-20 right-4 bg-rose-400 text-white p-4 rounded-full shadow-lg hover:bg-rose-500 transition-transform active:scale-95 z-40">
             <i data-lucide="plus" class="w-6 h-6"></i>
         </button>
 
         <!-- Navegação Inferior -->
-        <nav class="bg-pastel-card dark:bg-dark-card border-t border-slate-100 dark:border-slate-800 flex justify-around p-2 pb-safe z-20 transition-colors shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <button class="nav-btn flex flex-col items-center p-2 text-rose-400 transition-colors" data-target="tab-albuns">
-                <i data-lucide="image" class="w-6 h-6 mb-1"></i>
+        <nav class="fixed bottom-0 left-0 right-0 h-16 bg-pastel-card dark:bg-dark-card border-t border-slate-100 dark:border-slate-800 flex justify-around items-center z-30 transition-colors shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-safe">
+            <button class="nav-btn flex flex-col items-center p-2 text-rose-400 transition-colors flex-1" data-target="tab-albuns">
+                <i data-lucide="image" class="w-5 h-5 mb-1"></i>
                 <span class="text-[10px] font-medium">Álbuns</span>
             </button>
-            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors" data-target="tab-metas">
-                <i data-lucide="target" class="w-6 h-6 mb-1"></i>
+            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors flex-1" data-target="tab-metas">
+                <i data-lucide="target" class="w-5 h-5 mb-1"></i>
                 <span class="text-[10px] font-medium">Metas</span>
             </button>
-            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors" data-target="tab-telefones">
-                <i data-lucide="phone" class="w-6 h-6 mb-1"></i>
+            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors flex-1" data-target="tab-telefones">
+                <i data-lucide="phone" class="w-5 h-5 mb-1"></i>
                 <span class="text-[10px] font-medium">Telefones</span>
             </button>
-            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors" data-target="tab-documentos">
-                <i data-lucide="folder-open" class="w-6 h-6 mb-1"></i>
+            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors flex-1" data-target="tab-documentos">
+                <i data-lucide="folder-open" class="w-5 h-5 mb-1"></i>
                 <span class="text-[10px] font-medium">Docs</span>
             </button>
         </nav>
@@ -163,16 +160,13 @@
 
     <!-- Modais Overlay -->
     <div id="modal-overlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center transition-opacity">
-        
         <div id="modal-content" class="bg-pastel-card dark:bg-dark-card w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 transform transition-transform translate-y-full sm:translate-y-0 max-h-[90vh] overflow-y-auto">
-            
             <div class="flex justify-between items-center mb-6">
                 <h3 id="modal-title" class="text-xl font-medium">Adicionar</h3>
                 <button id="close-modal" class="text-slate-400 hover:text-rose-400">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
-
             <form id="dynamic-form" class="space-y-4">
                 <div id="form-fields"></div>
                 <button type="submit" class="w-full bg-rose-400 text-white font-medium p-4 rounded-2xl hover:bg-rose-500 transition-colors mt-2">
@@ -182,12 +176,24 @@
         </div>
     </div>
 
+    <!-- Script de Registro do Service Worker para PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').then(registration => {
+            console.log('SW registrado com sucesso:', registration.scope);
+          }).catch(error => {
+            console.log('Falha ao registrar SW:', error);
+          });
+        });
+      }
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // Configuração Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyARJ3xNG0-Nf1MFDJ8f1A7naypnTr5QpLk",
             authDomain: "appfamilia-214f0.firebaseapp.com",
@@ -340,13 +346,11 @@
             } else if (currentTab === 'tab-metas') {
                 modalTitle.textContent = "Nova Meta";
                 formFields.innerHTML = `
-                    <input type="text" id="meta-title" placeholder="Nome da Meta (Ex: Viagem Disney)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
-                    
+                    <input type="text" id="meta-title" placeholder="Nome da Meta" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
                     <div class="flex gap-3 mb-3">
                         <input type="number" id="meta-target" placeholder="Valor Alvo (R$)" required min="1" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
                         <input type="number" id="meta-saved" placeholder="Já Guardado (R$)" required min="0" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
                     </div>
-                    
                     <label class="block text-sm text-slate-500 mb-1">Ícone</label>
                     <select id="meta-icon" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl mb-3 dark:text-white border-none outline-none">
                         <option value="target">Alvo</option>
@@ -357,7 +361,6 @@
                         <option value="heart">Coração</option>
                         <option value="shopping-bag">Compras</option>
                     </select>
-                    
                     <label class="block text-sm text-slate-500 mb-1">Cor do Ícone</label>
                     <select id="meta-color" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none">
                         <option value="text-rose-400">Rosa Pastel</option>
@@ -377,13 +380,12 @@
                 modalTitle.textContent = "Novo Documento";
                 formFields.innerHTML = `
                     <input type="text" id="doc-title" placeholder="Nome do Documento" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
-                    <label class="block text-sm text-slate-500">Arquivo (Max 800KB - PDF, Word, Imagens)</label>
+                    <label class="block text-sm text-slate-500">Arquivo (Max 800KB)</label>
                     <input type="file" id="doc-file" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none text-sm">
                 `;
             }
         }
 
-        // Funções Helpers para Arquivos (Base64)
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -393,7 +395,6 @@
             });
         }
 
-        // Processar Imagens e reduzir tamanho via Canvas
         function resizeImageBase64(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -432,12 +433,11 @@
                 if (currentTab === 'tab-albuns') {
                     const title = document.getElementById('item-title').value;
                     const file = document.getElementById('item-file').files[0];
-                    if(file.size > 2000000) { alert("Imagem muito grande, escolha uma menor que 2MB."); throw new Error(); }
+                    if(file.size > 2000000) { alert("Imagem muito grande. Escolha uma menor."); throw new Error(); }
                     const base64 = await resizeImageBase64(file);
                     await addDoc(collection(db, 'users', currentUser.uid, 'albums'), {
                         title: title, image: base64, createdAt: new Date()
                     });
-
                 } else if (currentTab === 'tab-metas') {
                     await addDoc(collection(db, 'users', currentUser.uid, 'metas'), {
                         title: document.getElementById('meta-title').value,
@@ -447,20 +447,18 @@
                         color: document.getElementById('meta-color').value,
                         createdAt: new Date()
                     });
-
                 } else if (currentTab === 'tab-telefones') {
                     await addDoc(collection(db, 'users', currentUser.uid, 'telefones'), {
                         name: document.getElementById('tel-name').value,
                         number: document.getElementById('tel-number').value,
                         createdAt: new Date()
                     });
-
                 } else if (currentTab === 'tab-documentos') {
                     const title = document.getElementById('doc-title').value;
                     const file = document.getElementById('doc-file').files[0];
-                    if(file.size > 800000) { // 800KB limite para Firestore string
-                        alert("Arquivo excede 800KB. Por favor, comprima o PDF/Doc ou escolha um menor.");
-                        throw new Error("Arquivo muito grande");
+                    if(file.size > 800000) {
+                        alert("Arquivo excede 800KB. Comprima o PDF/Doc.");
+                        throw new Error("Arquivo grande");
                     }
                     const base64 = await fileToBase64(file);
                     await addDoc(collection(db, 'users', currentUser.uid, 'documentos'), {
@@ -476,8 +474,6 @@
             }
         });
 
-
-        // --- LISTENERS FIRESTORE ---
         function clearListeners() {
             unsubscribes.forEach(unsub => unsub());
             unsubscribes = [];
@@ -487,7 +483,6 @@
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
         }
 
-        // Global functions for inline HTML buttons
         window.deleteItem = async (collectionName, id) => {
             if(confirm("Tem certeza que deseja apagar?")) {
                 await deleteDoc(doc(db, 'users', currentUser.uid, collectionName, id));
@@ -534,7 +529,7 @@
             unsubscribes.push(onSnapshot(qMetas, (snapshot) => {
                 const list = document.getElementById('metas-list');
                 list.innerHTML = '';
-                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="target" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhuma meta criada</p></div>`;
+                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="target" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhuma meta</p></div>`;
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     const percent = Math.min(100, Math.max(0, (data.saved / data.target) * 100)).toFixed(1);
