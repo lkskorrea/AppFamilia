@@ -1,347 +1,247 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nossa Família</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Enlevo</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            bg: '#fdfbf7',
+                            card: '#ffffff',
+                            primary: '#eecfd4', // rose pastel
+                            secondary: '#d1e8e2', // mint pastel
+                            text: '#5c5c5c'
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            text: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            background-color: #f8fafc;
-        }
-        
-        .tab-content { display: none; animation: fadeIn 0.25s ease-out forwards; }
-        .tab-content.active { display: block; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .modal { display: none; opacity: 0; transition: opacity 0.2s ease-in-out; }
-        .modal.show { display: flex; opacity: 1; }
-        .modal-content { transform: scale(0.95); transition: transform 0.2s ease-in-out; }
-        .modal.show .modal-content { transform: scale(1); }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        /* Esconder barra de rolagem mas manter funcionalidade */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="bg-pastel-bg dark:bg-dark-bg text-pastel-text dark:text-dark-text transition-colors duration-300 font-sans min-h-screen flex flex-col">
 
-    <!-- ================= TELA DE LOGIN / REGISTRO ================= -->
-    <div id="login-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-6 transition-opacity duration-300">
-        <div class="w-full max-w-sm flex flex-col items-center text-center space-y-6">
-            <div class="w-24 h-24 bg-indigo-50 text-indigo-500 rounded-[2rem] flex items-center justify-center shadow-sm">
-                <i data-lucide="users-2" class="w-12 h-12"></i>
+    <!-- Tela de Login -->
+    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6">
+        <div class="bg-pastel-card dark:bg-dark-card p-8 rounded-3xl shadow-sm w-full max-w-sm border border-slate-100 dark:border-slate-800 transition-colors">
+            <div class="flex justify-center mb-4 text-rose-400">
+                <i data-lucide="feather" class="w-14 h-14"></i>
             </div>
+            <h1 class="text-3xl font-light text-center mb-2 tracking-wide">Enlevo</h1>
+            <h2 class="text-sm text-center mb-8 opacity-70" id="form-title">Entrar</h2>
             
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight text-slate-900" id="auth-title">Entrar</h1>
-                <p class="text-slate-500 mt-2 text-sm">Acesse o aplicativo da sua família.</p>
-            </div>
-
-            <!-- Formulário de Autenticação Único com Alternância -->
-            <form id="auth-form" class="w-full space-y-4 text-left">
+            <form id="auth-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">E-mail</label>
-                    <input type="email" id="auth-email" required class="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all" placeholder="seu@email.com">
+                    <input type="email" id="email" placeholder="E-mail" required class="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-300 transition-all text-sm dark:text-white">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Senha</label>
-                    <input type="password" id="auth-password" required minlength="6" class="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all" placeholder="Mínimo 6 caracteres">
+                    <input type="password" id="password" placeholder="Senha (Mín. 6 caracteres)" required minlength="6" class="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-300 transition-all text-sm dark:text-white">
                 </div>
-
-                <div class="pt-2 flex flex-col gap-3">
-                    <button type="submit" id="btn-auth-submit" class="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 active:scale-95">
-                        <i data-lucide="log-in" id="auth-submit-icon" class="w-5 h-5"></i>
-                        <span id="auth-submit-text">Acessar</span>
-                    </button>
-                    <button type="button" id="btn-auth-toggle" class="text-indigo-600 text-sm font-medium hover:underline p-2">
-                        Não tem conta? Crie aqui
-                    </button>
-                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-rose-300 text-slate-800 dark:text-slate-900 font-medium p-4 rounded-2xl hover:bg-rose-400 transition-colors shadow-sm">
+                    Entrar
+                </button>
             </form>
+            
+            <div class="mt-6 text-center">
+                <button id="toggle-mode" class="text-sm text-rose-400 font-medium hover:opacity-80 transition-opacity">
+                    Criar nova conta
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- ================= APLICATIVO PRINCIPAL ================= -->
-    <div id="main-app" class="hidden flex-1 flex-col w-full h-full min-h-screen">
+    <!-- Tela Principal do App -->
+    <div id="app-screen" class="hidden flex-1 flex flex-col h-screen overflow-hidden">
         
         <!-- Header -->
-        <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200/60 shadow-sm">
-            <div class="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <button id="btn-back" class="hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors active:scale-95">
-                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                    </button>
-                    <div id="header-icon" class="p-2 bg-indigo-50 text-indigo-500 rounded-xl">
-                        <i data-lucide="image" class="w-5 h-5"></i>
-                    </div>
-                    <h1 id="header-title" class="text-lg font-bold tracking-tight text-slate-800 truncate">Álbuns</h1>
-                </div>
-                
-                <div class="flex items-center gap-1">
-                    <button id="btn-logout" class="p-2 text-slate-400 hover:text-red-500 transition-colors rounded-full" title="Sair">
-                        <i data-lucide="log-out" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="window.handleGlobalAddClick()" class="ml-1 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 shadow-sm transition-transform active:scale-90" title="Adicionar">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                    </button>
-                </div>
+        <header class="bg-pastel-card dark:bg-dark-card shadow-sm p-4 flex justify-between items-center z-10 transition-colors">
+            <h1 class="text-2xl font-light tracking-wide flex items-center gap-2 text-rose-400">
+                <i data-lucide="feather" class="w-6 h-6"></i> Enlevo
+            </h1>
+            <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="text-slate-400 hover:text-rose-400 transition-colors">
+                    <i data-lucide="moon" class="w-6 h-6 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-6 h-6 hidden dark:block text-yellow-300"></i>
+                </button>
+                <button id="logout-btn" class="text-slate-400 hover:text-rose-400 transition-colors">
+                    <i data-lucide="log-out" class="w-6 h-6"></i>
+                </button>
             </div>
         </header>
 
-        <!-- Conteúdo Principal -->
-        <main class="flex-1 max-w-md mx-auto w-full p-4 pb-24 relative">
+        <!-- Conteúdo Rolável -->
+        <main class="flex-1 overflow-y-auto p-4 pb-28 relative">
             
-            <!-- SEÇÃO: ÁLBUNS -->
-            <section id="tab-albuns" class="tab-content active">
-                
-                <!-- Raiz: Lista de Álbuns -->
-                <div id="view-albuns-root" class="space-y-4">
-                    <div class="space-y-1 mb-4">
-                        <h2 class="text-xl font-semibold">Galeria</h2>
-                        <p class="text-slate-500 text-sm">Seus momentos organizados em álbuns.</p>
-                    </div>
-
-                    <div id="loading-albuns" class="py-12 flex justify-center text-indigo-400"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>
-
-                    <div id="empty-albuns" class="hidden flex-col items-center justify-center py-16 text-center space-y-3 bg-slate-100/50 rounded-3xl border border-dashed border-slate-200">
-                        <div class="p-4 bg-white shadow-sm rounded-full text-slate-400"><i data-lucide="image-plus" class="w-8 h-8"></i></div>
-                        <p class="text-slate-500 text-sm font-medium">Nenhum álbum criado.</p>
-                        <p class="text-slate-400 text-xs px-8">Toque no + no topo para criar seu primeiro álbum.</p>
-                    </div>
-
-                    <div id="grid-albuns" class="grid grid-cols-2 gap-4 hidden"></div>
+            <!-- Aba: Álbuns -->
+            <section id="tab-albuns" class="tab-content hidden space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium">Nossos Álbuns</h2>
                 </div>
-
-                <!-- Detalhe: Fotos do Álbum -->
-                <div id="view-album-detail" class="hidden space-y-4">
-                    <div id="loading-fotos" class="py-12 flex justify-center text-indigo-400"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>
-
-                    <div id="empty-fotos" class="hidden flex-col items-center justify-center py-16 text-center space-y-3 bg-slate-100/50 rounded-3xl border border-dashed border-slate-200">
-                        <div class="p-4 bg-white shadow-sm rounded-full text-slate-400"><i data-lucide="camera" class="w-8 h-8"></i></div>
-                        <p class="text-slate-500 text-sm font-medium">Álbum vazio</p>
-                        <p class="text-slate-400 text-xs px-8">Adicione fotos tocando no + no topo.</p>
-                    </div>
-
-                    <div id="grid-fotos" class="columns-2 gap-3 space-y-3 hidden"></div>
+                <div id="albuns-list" class="grid grid-cols-2 gap-4">
+                    <!-- Cards de Albuns injetados aqui -->
                 </div>
             </section>
 
-            <!-- SEÇÃO: EVENTOS -->
-            <section id="tab-eventos" class="tab-content">
-                <div class="space-y-1 mb-6">
-                    <h2 class="text-xl font-semibold">Eventos</h2>
-                    <p class="text-slate-500 text-sm">Não esqueça datas importantes.</p>
+            <!-- Aba: Metas -->
+            <section id="tab-metas" class="tab-content hidden space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium">Nossas Metas</h2>
                 </div>
-
-                <div id="loading-eventos" class="py-12 flex justify-center text-indigo-400"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>
-
-                <div id="empty-eventos" class="hidden flex-col items-center justify-center py-16 text-center space-y-3 bg-slate-100/50 rounded-3xl border border-dashed border-slate-200">
-                    <div class="p-4 bg-white shadow-sm rounded-full text-slate-400"><i data-lucide="calendar-heart" class="w-8 h-8"></i></div>
-                    <p class="text-slate-500 text-sm font-medium">Nenhum evento agendado.</p>
+                <div id="metas-list" class="space-y-4">
+                    <!-- Cards de Metas injetados aqui -->
                 </div>
-
-                <div id="list-eventos" class="space-y-3 hidden"></div>
             </section>
 
-            <!-- SEÇÃO: METAS -->
-            <section id="tab-metas" class="tab-content">
-                <div class="space-y-1 mb-6">
-                    <h2 class="text-xl font-semibold">Metas</h2>
-                    <p class="text-slate-500 text-sm">Objetivos para alcançarmos juntos.</p>
+            <!-- Aba: Telefones -->
+            <section id="tab-telefones" class="tab-content hidden space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium">Contatos Importantes</h2>
                 </div>
-
-                <div id="loading-metas" class="py-12 flex justify-center text-indigo-400"><i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i></div>
-
-                <div id="empty-metas" class="hidden flex-col items-center justify-center py-16 text-center space-y-3 bg-slate-100/50 rounded-3xl border border-dashed border-slate-200">
-                    <div class="p-4 bg-white shadow-sm rounded-full text-slate-400"><i data-lucide="list-todo" class="w-8 h-8"></i></div>
-                    <p class="text-slate-500 text-sm font-medium">Sua lista está vazia.</p>
+                <div id="telefones-list" class="space-y-3">
+                    <!-- Contatos injetados aqui -->
                 </div>
-
-                <div id="list-metas" class="space-y-3 hidden"></div>
             </section>
+
+            <!-- Aba: Documentos -->
+            <section id="tab-documentos" class="tab-content hidden space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium">Meus Documentos</h2>
+                </div>
+                <div class="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 p-3 rounded-xl text-xs mb-4 flex items-start gap-2">
+                    <i data-lucide="info" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                    <p>Limite de tamanho por arquivo: 800KB. Suporta PDF, DOCX, Imagens.</p>
+                </div>
+                <div id="documentos-list" class="space-y-3">
+                    <!-- Documentos injetados aqui -->
+                </div>
+            </section>
+
         </main>
 
+        <!-- Botão Flutuante (FAB) -->
+        <button id="fab-btn" class="fixed bottom-24 right-6 bg-rose-400 text-white p-4 rounded-full shadow-lg hover:bg-rose-500 transition-transform active:scale-95 z-20">
+            <i data-lucide="plus" class="w-6 h-6"></i>
+        </button>
+
         <!-- Navegação Inferior -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200/60 pb-safe z-40 shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.03)]">
-            <div class="max-w-md mx-auto flex justify-between px-2">
-                <button onclick="window.switchTab('albuns', this)" class="nav-btn flex-1 flex flex-col items-center py-3 text-indigo-600 transition-colors">
-                    <i data-lucide="images" class="w-6 h-6 mb-1"></i>
-                    <span class="text-[10px] font-semibold tracking-wide">Álbuns</span>
-                </button>
-                <button onclick="window.switchTab('eventos', this)" class="nav-btn flex-1 flex flex-col items-center py-3 text-slate-400 hover:text-indigo-500 transition-colors">
-                    <i data-lucide="calendar-days" class="w-6 h-6 mb-1"></i>
-                    <span class="text-[10px] font-semibold tracking-wide">Eventos</span>
-                </button>
-                <button onclick="window.switchTab('metas', this)" class="nav-btn flex-1 flex flex-col items-center py-3 text-slate-400 hover:text-indigo-500 transition-colors">
-                    <i data-lucide="target" class="w-6 h-6 mb-1"></i>
-                    <span class="text-[10px] font-semibold tracking-wide">Metas</span>
-                </button>
-            </div>
+        <nav class="bg-pastel-card dark:bg-dark-card border-t border-slate-100 dark:border-slate-800 flex justify-around p-2 pb-safe z-20 transition-colors shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button class="nav-btn flex flex-col items-center p-2 text-rose-400 transition-colors" data-target="tab-albuns">
+                <i data-lucide="image" class="w-6 h-6 mb-1"></i>
+                <span class="text-[10px] font-medium">Álbuns</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors" data-target="tab-metas">
+                <i data-lucide="target" class="w-6 h-6 mb-1"></i>
+                <span class="text-[10px] font-medium">Metas</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors" data-target="tab-telefones">
+                <i data-lucide="phone" class="w-6 h-6 mb-1"></i>
+                <span class="text-[10px] font-medium">Telefones</span>
+            </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors" data-target="tab-documentos">
+                <i data-lucide="folder-open" class="w-6 h-6 mb-1"></i>
+                <span class="text-[10px] font-medium">Docs</span>
+            </button>
         </nav>
     </div>
 
-    <!-- ================= MODAIS ================= -->
-
-    <!-- Álbum -->
-    <div id="modal-album" class="modal fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4">
-        <div class="modal-content bg-white w-full max-w-sm rounded-3xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold">Novo Álbum</h3>
-                <button onclick="window.closeModal('modal-album')" class="text-slate-400 hover:text-slate-600 p-1 bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <!-- Modais Overlay -->
+    <div id="modal-overlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center transition-opacity">
+        
+        <div id="modal-content" class="bg-pastel-card dark:bg-dark-card w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 transform transition-transform translate-y-full sm:translate-y-0 max-h-[90vh] overflow-y-auto">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modal-title" class="text-xl font-medium">Adicionar</h3>
+                <button id="close-modal" class="text-slate-400 hover:text-rose-400">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
             </div>
-            <form id="form-album" class="p-5 space-y-5" onsubmit="window.addAlbum(event)">
-                <input type="text" id="album-nome" required class="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-indigo-500" placeholder="Nome do álbum (Ex: Praia 2026)">
-                <button type="submit" class="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold hover:bg-indigo-700">Criar</button>
+
+            <form id="dynamic-form" class="space-y-4">
+                <div id="form-fields"></div>
+                <button type="submit" class="w-full bg-rose-400 text-white font-medium p-4 rounded-2xl hover:bg-rose-500 transition-colors mt-2">
+                    Salvar
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Foto -->
-    <div id="modal-foto" class="modal fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4">
-        <div class="modal-content bg-white w-full max-w-sm rounded-3xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold">Adicionar Foto</h3>
-                <button onclick="window.closeModal('modal-foto')" class="text-slate-400 hover:text-slate-600 p-1 bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <form id="form-foto" class="p-5 space-y-5" onsubmit="window.addFoto(event)">
-                <div class="relative w-full border-2 border-dashed border-indigo-200 bg-indigo-50/50 rounded-2xl hover:bg-indigo-50 transition-colors cursor-pointer flex flex-col items-center justify-center py-8 px-4 text-center group" onclick="document.getElementById('foto-file').click()">
-                    <i data-lucide="image-plus" class="w-10 h-10 text-indigo-400 group-hover:text-indigo-500 mb-2"></i>
-                    <span class="text-sm font-semibold text-indigo-600">Tocar para escolher</span>
-                    <span class="text-xs text-slate-500 mt-1 max-w-[200px] truncate" id="foto-filename">Nenhum arquivo</span>
-                    <input type="file" id="foto-file" required accept="image/*" class="hidden" onchange="window.updateFileName(this)">
-                </div>
-                <button type="submit" id="btn-submit-foto" class="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold hover:bg-indigo-700 flex justify-center items-center gap-2">Salvar</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Evento -->
-    <div id="modal-evento" class="modal fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4">
-        <div class="modal-content bg-white w-full max-w-sm rounded-3xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold">Novo Evento</h3>
-                <button onclick="window.closeModal('modal-evento')" class="text-slate-400 hover:text-slate-600 p-1 bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <form id="form-evento" class="p-5 space-y-4" onsubmit="window.addEvento(event)">
-                <input type="text" id="evento-titulo" required class="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-indigo-500" placeholder="O que vai acontecer?">
-                <input type="date" id="evento-data" required class="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-indigo-500">
-                <button type="submit" class="w-full mt-2 bg-indigo-600 text-white rounded-xl py-3.5 font-semibold hover:bg-indigo-700">Salvar Evento</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Meta -->
-    <div id="modal-meta" class="modal fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4">
-        <div class="modal-content bg-white w-full max-w-sm rounded-3xl shadow-xl overflow-hidden">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold">Nova Meta</h3>
-                <button onclick="window.closeModal('modal-meta')" class="text-slate-400 hover:text-slate-600 p-1 bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <form id="form-meta" class="p-5 space-y-5" onsubmit="window.addMeta(event)">
-                <input type="text" id="meta-texto" required class="w-full border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-indigo-500" placeholder="Qual o objetivo?">
-                <button type="submit" class="w-full bg-indigo-600 text-white rounded-xl py-3.5 font-semibold hover:bg-indigo-700">Adicionar Meta</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Custom Alert Box -->
-    <div id="modal-alert" class="modal fixed inset-0 z-[110] bg-slate-900/40 backdrop-blur-sm items-center justify-center p-4">
-        <div class="modal-content bg-white w-full max-w-xs rounded-2xl shadow-xl p-5 text-center space-y-4">
-            <div class="mx-auto w-12 h-12 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mb-2">
-                <i data-lucide="alert-circle" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800" id="alert-title">Aviso</h3>
-            <p class="text-sm text-slate-500" id="alert-message"></p>
-            <button onclick="document.getElementById('modal-alert').classList.remove('show')" class="w-full bg-slate-800 text-white rounded-xl py-3 font-semibold hover:bg-slate-700">OK</button>
-        </div>
-    </div>
-
-    <!-- ================= SCRIPTS & FIREBASE ================= -->
     <script type="module">
-        // Importações Modulares v10.12.0
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        lucide.createIcons();
-
-        // Configuração Exata do Firebase
+        // Configuração Firebase
         const firebaseConfig = {
-            apiKey: 'AIzaSyARJ3xNG0-Nf1MFDJ8f1A7naypnTr5QpLk',
-            authDomain: 'appfamilia-214f0.firebaseapp.com',
-            projectId: 'appfamilia-214f0',
-            storageBucket: 'appfamilia-214f0.firebasestorage.app',
-            messagingSenderId: '901369233399',
-            appId: '1:901369233399:web:1a88e967766443cd4a78f2'
+            apiKey: "AIzaSyARJ3xNG0-Nf1MFDJ8f1A7naypnTr5QpLk",
+            authDomain: "appfamilia-214f0.firebaseapp.com",
+            projectId: "appfamilia-214f0",
+            storageBucket: "appfamilia-214f0.firebasestorage.app",
+            messagingSenderId: "901369233399",
+            appId: "1:901369233399:web:1a88e967766443cd4a78f2"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const rootAppId = 'appfamilia';
-
-        // Estado do App
-        let currentUser = null;
-        let currentTab = 'albuns';
-        let activeAlbumId = null; 
-        let isLoginMode = true; // Controla se estamos no modo Entrar ou Registrar
-        let appData = { albuns: [], fotos: [], eventos: [], metas: [] };
-        let unsubscribers = [];
-
-        // UI Elementos
-        const loginScreen = document.getElementById('login-screen');
-        const mainApp = document.getElementById('main-app');
-
-        function showAlert(title, message) {
-            document.getElementById('alert-title').innerText = title;
-            document.getElementById('alert-message').innerText = message;
-            document.getElementById('modal-alert').classList.add('show');
-        }
-
-        // ================= AUTENTICAÇÃO (LOGIN / REGISTRO) =================
-        const authForm = document.getElementById('auth-form');
-        const authTitle = document.getElementById('auth-title');
-        const btnAuthSubmit = document.getElementById('btn-auth-submit');
-        const authSubmitText = document.getElementById('auth-submit-text');
-        const authSubmitIcon = document.getElementById('auth-submit-icon');
-        const btnAuthToggle = document.getElementById('btn-auth-toggle');
-
-        // Alternar entre Login e Criar Conta
-        btnAuthToggle.addEventListener('click', () => {
-            isLoginMode = !isLoginMode;
-            authTitle.innerText = isLoginMode ? 'Entrar' : 'Criar Conta';
-            authSubmitText.innerText = isLoginMode ? 'Acessar' : 'Registrar';
-            authSubmitIcon.setAttribute('data-lucide', isLoginMode ? 'log-in' : 'user-plus');
-            btnAuthToggle.innerText = isLoginMode ? 'Não tem conta? Crie aqui' : 'Já tem conta? Entre aqui';
-            lucide.createIcons();
-        });
         
-        // Submeter o Formulário
+        lucide.createIcons();
+        let currentUser = null;
+        let currentTab = 'tab-albuns';
+        let unsubscribes = [];
+
+        // --- TEMA ESCURO (DARK MODE) ---
+        const html = document.documentElement;
+        const themeBtn = document.getElementById('theme-toggle');
+        
+        if (localStorage.getItem('enlevo-theme') === 'dark') {
+            html.classList.add('dark');
+        }
+        
+        themeBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('enlevo-theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // --- AUTENTICAÇÃO ---
+        let isLoginMode = true;
+        const loginScreen = document.getElementById('login-screen');
+        const appScreen = document.getElementById('app-screen');
+        const authForm = document.getElementById('auth-form');
+        const formTitle = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleMode = document.getElementById('toggle-mode');
+
+        toggleMode.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            formTitle.textContent = isLoginMode ? 'Entrar' : 'Criar Conta';
+            submitBtn.textContent = isLoginMode ? 'Entrar' : 'Cadastrar';
+            toggleMode.textContent = isLoginMode ? 'Criar nova conta' : 'Já tem conta? Entrar';
+        });
+
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            
-            btnAuthSubmit.disabled = true;
-            btnAuthSubmit.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Aguarde...</span>';
-            lucide.createIcons();
-            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Aguarde...";
+
             try {
                 if (isLoginMode) {
                     await signInWithEmailAndPassword(auth, email, password);
@@ -349,437 +249,383 @@
                     await createUserWithEmailAndPassword(auth, email, password);
                 }
             } catch (error) {
-                console.error("Erro Auth:", error);
-                let errorMsg = "Ocorreu um erro inesperado.";
-                if (error.code === 'auth/email-already-in-use') errorMsg = "Este e-mail já está em uso.";
-                else if (error.code === 'auth/weak-password') errorMsg = "A senha deve ter pelo menos 6 caracteres.";
-                else if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') errorMsg = "E-mail ou senha incorretos.";
-                
-                showAlert("Atenção", errorMsg);
-                
-                // Restaura o botão
-                btnAuthSubmit.disabled = false;
-                btnAuthSubmit.innerHTML = `<i data-lucide="${isLoginMode ? 'log-in' : 'user-plus'}" class="w-5 h-5"></i><span>${isLoginMode ? 'Acessar' : 'Registrar'}</span>`;
-                lucide.createIcons();
+                alert("Erro: " + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLoginMode ? 'Entrar' : 'Cadastrar';
             }
         });
 
-        // Logout
-        document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-        // Listener Global de Autenticação
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                loginScreen.classList.add('opacity-0');
-                setTimeout(() => {
-                    loginScreen.style.display = 'none';
-                    mainApp.classList.remove('hidden');
-                    mainApp.classList.add('flex');
-                    document.getElementById('auth-password').value = ''; // Limpar senha
-                    
-                    // Restaura botão auth para caso saia
-                    btnAuthSubmit.disabled = false;
-                    btnAuthSubmit.innerHTML = `<i data-lucide="${isLoginMode ? 'log-in' : 'user-plus'}" class="w-5 h-5"></i><span>${isLoginMode ? 'Acessar' : 'Registrar'}</span>`;
-                    lucide.createIcons();
-                    
-                    startFirestoreSync();
-                }, 300);
+                loginScreen.classList.add('hidden');
+                appScreen.classList.remove('hidden');
+                switchTab('tab-albuns');
+                setupListeners();
             } else {
                 currentUser = null;
-                stopFirestoreSync();
-                mainApp.classList.add('hidden');
-                mainApp.classList.remove('flex');
-                loginScreen.style.display = 'flex';
-                setTimeout(() => loginScreen.classList.remove('opacity-0'), 50);
+                loginScreen.classList.remove('hidden');
+                appScreen.classList.add('hidden');
+                clearListeners();
+                authForm.reset();
+                submitBtn.disabled = false;
+                submitBtn.textContent = isLoginMode ? 'Entrar' : 'Cadastrar';
             }
         });
 
-        // ================= SINCRONIZAÇÃO FIRESTORE =================
-        // Regra 1 Cumprida: /artifacts/{appId}/users/{userId}/{collectionName}
-        function startFirestoreSync() {
-            if (!currentUser) return;
-            const uid = currentUser.uid;
+        // --- NAVEGAÇÃO ---
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const tabs = document.querySelectorAll('.tab-content');
 
-            // Escuta Álbuns
-            unsubscribers.push(onSnapshot(collection(db, 'artifacts', rootAppId, 'users', uid, 'albuns'), 
-                (snap) => {
-                    appData.albuns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    // Regra 2 Cumprida: Ordenação em memória (sem complex queries no Firebase)
-                    appData.albuns.sort((a, b) => b.createdAt - a.createdAt);
-                    if(currentTab === 'albuns') renderAlbunsContext();
-                }, (err) => console.error(err)
-            ));
-
-            // Escuta Fotos
-            unsubscribers.push(onSnapshot(collection(db, 'artifacts', rootAppId, 'users', uid, 'fotos'), 
-                (snap) => {
-                    appData.fotos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    appData.fotos.sort((a, b) => b.createdAt - a.createdAt);
-                    if(currentTab === 'albuns' && activeAlbumId) renderFotos();
-                    else renderAlbunsContext(); 
-                }, (err) => console.error(err)
-            ));
-
-            // Escuta Eventos
-            unsubscribers.push(onSnapshot(collection(db, 'artifacts', rootAppId, 'users', uid, 'eventos'), 
-                (snap) => {
-                    appData.eventos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    appData.eventos.sort((a, b) => new Date(a.data) - new Date(b.data));
-                    if(currentTab === 'eventos') renderEventos();
-                }, (err) => console.error(err)
-            ));
-
-            // Escuta Metas
-            unsubscribers.push(onSnapshot(collection(db, 'artifacts', rootAppId, 'users', uid, 'metas'), 
-                (snap) => {
-                    appData.metas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    appData.metas.sort((a, b) => (a.feita === b.feita) ? b.createdAt - a.createdAt : (a.feita ? 1 : -1));
-                    if(currentTab === 'metas') renderMetas();
-                }, (err) => console.error(err)
-            ));
-        }
-
-        function stopFirestoreSync() {
-            unsubscribers.forEach(unsub => unsub());
-            unsubscribers = [];
-        }
-
-        // ================= NAVEGAÇÃO E MODAIS =================
-        window.switchTab = function(tabId, clickedBtn) {
-            currentTab = tabId;
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-indigo-600');
-                btn.classList.add('text-slate-400');
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchTab(btn.dataset.target);
             });
-            clickedBtn.classList.remove('text-slate-400');
-            clickedBtn.classList.add('text-indigo-600');
-
-            const btnBack = document.getElementById('btn-back');
-            const headerTitle = document.getElementById('header-title');
-            const headerIcon = document.getElementById('header-icon');
-
-            if (tabId === 'albuns') {
-                if (activeAlbumId) {
-                    btnBack.classList.remove('hidden');
-                    headerIcon.classList.add('hidden');
-                    const album = appData.albuns.find(a => a.id === activeAlbumId);
-                    headerTitle.textContent = album ? album.nome : 'Fotos';
-                    renderFotos();
-                } else {
-                    btnBack.classList.add('hidden');
-                    headerIcon.classList.remove('hidden');
-                    headerIcon.innerHTML = '<i data-lucide="image" class="w-5 h-5"></i>';
-                    headerTitle.textContent = 'Álbuns';
-                    renderAlbunsRoot();
-                }
-            } else {
-                btnBack.classList.add('hidden');
-                headerIcon.classList.remove('hidden');
-                activeAlbumId = null; 
-                if (tabId === 'eventos') {
-                    headerIcon.innerHTML = '<i data-lucide="calendar-days" class="w-5 h-5"></i>';
-                    headerTitle.textContent = 'Eventos';
-                    renderEventos();
-                } else {
-                    headerIcon.innerHTML = '<i data-lucide="target" class="w-5 h-5"></i>';
-                    headerTitle.textContent = 'Metas';
-                    renderMetas();
-                }
-            }
-            lucide.createIcons();
-        };
-
-        document.getElementById('btn-back').addEventListener('click', () => {
-            activeAlbumId = null; 
-            const btnAlbum = document.querySelector('.nav-btn'); 
-            window.switchTab('albuns', btnAlbum);
         });
 
-        window.handleGlobalAddClick = function() {
-            if (currentTab === 'albuns') {
-                if (activeAlbumId) window.openModal('modal-foto');
-                else window.openModal('modal-album');
-            } 
-            else if (currentTab === 'eventos') window.openModal('modal-evento');
-            else if (currentTab === 'metas') window.openModal('modal-meta');
-        };
+        function switchTab(targetId) {
+            currentTab = targetId;
+            tabs.forEach(tab => {
+                tab.classList.add('hidden');
+                if (tab.id === targetId) tab.classList.remove('hidden');
+            });
+            
+            navBtns.forEach(btn => {
+                if (btn.dataset.target === targetId) {
+                    btn.classList.remove('text-slate-400');
+                    btn.classList.add('text-rose-400');
+                } else {
+                    btn.classList.remove('text-rose-400');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+        }
 
-        window.openAlbum = function(albumId) {
-            activeAlbumId = albumId;
-            const btnAlbum = document.querySelector('.nav-btn');
-            window.switchTab('albuns', btnAlbum);
-        };
+        // --- MODAIS E FORMULÁRIOS ---
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+        const formFields = document.getElementById('form-fields');
+        const dynamicForm = document.getElementById('dynamic-form');
+        const modalTitle = document.getElementById('modal-title');
 
-        window.openModal = function(id) { document.getElementById(id).classList.add('show'); };
-        window.closeModal = function(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('show');
-            const form = modal.querySelector('form');
-            if(form) {
-                form.reset();
-                if(id === 'modal-foto') document.getElementById('foto-filename').textContent = "Nenhum arquivo";
+        document.getElementById('fab-btn').addEventListener('click', openModal);
+        document.getElementById('close-modal').addEventListener('click', closeModal);
+
+        function closeModal() {
+            modalContent.classList.remove('translate-y-0');
+            modalContent.classList.add('translate-y-full');
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+            }, 300);
+        }
+
+        function openModal() {
+            modalOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('translate-y-full');
+                modalContent.classList.add('translate-y-0');
+            }, 10);
+            
+            formFields.innerHTML = '';
+            
+            if (currentTab === 'tab-albuns') {
+                modalTitle.textContent = "Novo Álbum / Foto";
+                formFields.innerHTML = `
+                    <input type="text" id="item-title" placeholder="Título (Ex: Viagem, Aniversário)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                    <label class="block text-sm text-slate-500">Foto (Max ~800KB recomendando)</label>
+                    <input type="file" id="item-file" accept="image/*" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none text-sm">
+                `;
+            } else if (currentTab === 'tab-metas') {
+                modalTitle.textContent = "Nova Meta";
+                formFields.innerHTML = `
+                    <input type="text" id="meta-title" placeholder="Nome da Meta (Ex: Viagem Disney)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
+                    
+                    <div class="flex gap-3 mb-3">
+                        <input type="number" id="meta-target" placeholder="Valor Alvo (R$)" required min="1" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                        <input type="number" id="meta-saved" placeholder="Já Guardado (R$)" required min="0" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                    </div>
+                    
+                    <label class="block text-sm text-slate-500 mb-1">Ícone</label>
+                    <select id="meta-icon" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl mb-3 dark:text-white border-none outline-none">
+                        <option value="target">Alvo</option>
+                        <option value="plane">Avião</option>
+                        <option value="car">Carro</option>
+                        <option value="home">Casa</option>
+                        <option value="star">Estrela</option>
+                        <option value="heart">Coração</option>
+                        <option value="shopping-bag">Compras</option>
+                    </select>
+                    
+                    <label class="block text-sm text-slate-500 mb-1">Cor do Ícone</label>
+                    <select id="meta-color" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none">
+                        <option value="text-rose-400">Rosa Pastel</option>
+                        <option value="text-sky-400">Azul Pastel</option>
+                        <option value="text-emerald-400">Verde Pastel</option>
+                        <option value="text-amber-400">Amarelo Pastel</option>
+                        <option value="text-purple-400">Roxo Pastel</option>
+                    </select>
+                `;
+            } else if (currentTab === 'tab-telefones') {
+                modalTitle.textContent = "Novo Contato";
+                formFields.innerHTML = `
+                    <input type="text" id="tel-name" placeholder="Nome (Ex: Pediatra, Seguro)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
+                    <input type="tel" id="tel-number" placeholder="Número com DDD" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                `;
+            } else if (currentTab === 'tab-documentos') {
+                modalTitle.textContent = "Novo Documento";
+                formFields.innerHTML = `
+                    <input type="text" id="doc-title" placeholder="Nome do Documento" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
+                    <label class="block text-sm text-slate-500">Arquivo (Max 800KB - PDF, Word, Imagens)</label>
+                    <input type="file" id="doc-file" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none text-sm">
+                `;
             }
-        };
-        window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.classList.remove('show'); };
+        }
 
-        window.updateFileName = function(input) {
-            const label = document.getElementById('foto-filename');
-            if(input.files && input.files[0]) {
-                label.textContent = input.files[0].name;
-                label.classList.add('text-indigo-700', 'font-medium');
-            } else {
-                label.textContent = "Nenhum arquivo";
-                label.classList.remove('text-indigo-700', 'font-medium');
-            }
-        };
-
-        // ================= LÓGICA DE FOTOS E COMPRESSÃO (CANVAS) =================
-        function compressImage(file, maxW = 600, maxH = 600, quality = 0.6) {
+        // Funções Helpers para Arquivos (Base64)
+        function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
                 reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width;
-                        let h = img.height;
-
-                        if (w > h && w > maxW) { h *= maxW / w; w = maxW; } 
-                        else if (h > maxW) { w *= maxH / h; h = maxH; }
-
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, w, h);
-                        
-                        resolve(canvas.toDataURL('image/jpeg', quality));
-                    };
-                    img.onerror = (err) => reject(err);
-                };
-                reader.onerror = (err) => reject(err);
             });
         }
 
-        // ================= CRUD NO FIRESTORE =================
-        window.addAlbum = async function(e) {
-            e.preventDefault();
-            if(!currentUser) return;
-            const nome = document.getElementById('album-nome').value;
-            window.closeModal('modal-album');
-            try {
-                await addDoc(collection(db, 'artifacts', rootAppId, 'users', currentUser.uid, 'albuns'), { nome, createdAt: Date.now() });
-            } catch(e) { showAlert("Erro", "Não foi possível criar o álbum."); }
-        };
+        // Processar Imagens e reduzir tamanho via Canvas
+        function resizeImageBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const max_size = 800;
+                        if (width > height) {
+                            if (width > max_size) { height *= max_size / width; width = max_size; }
+                        } else {
+                            if (height > max_size) { width *= max_size / height; height = max_size; }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            });
+        }
 
-        window.addFoto = async function(e) {
+        dynamicForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!currentUser || !activeAlbumId) return;
-            
-            const fileInput = document.getElementById('foto-file');
-            if(!fileInput.files || fileInput.files.length === 0) return;
-            
-            const btn = document.getElementById('btn-submit-foto');
-            const originalHTML = btn.innerHTML;
+            const btn = dynamicForm.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.textContent = "Salvando...";
             btn.disabled = true;
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processando...';
-            lucide.createIcons();
 
             try {
-                const file = fileInput.files[0];
-                const base64Image = await compressImage(file); 
-                
-                await addDoc(collection(db, 'artifacts', rootAppId, 'users', currentUser.uid, 'fotos'), {
-                    albumId: activeAlbumId,
-                    base64: base64Image,
-                    createdAt: Date.now()
-                });
-                window.closeModal('modal-foto');
-            } catch(err) {
-                showAlert("Erro de Imagem", "A imagem é muito grande ou não suportada. Tente outra.");
+                if (currentTab === 'tab-albuns') {
+                    const title = document.getElementById('item-title').value;
+                    const file = document.getElementById('item-file').files[0];
+                    if(file.size > 2000000) { alert("Imagem muito grande, escolha uma menor que 2MB."); throw new Error(); }
+                    const base64 = await resizeImageBase64(file);
+                    await addDoc(collection(db, 'users', currentUser.uid, 'albums'), {
+                        title: title, image: base64, createdAt: new Date()
+                    });
+
+                } else if (currentTab === 'tab-metas') {
+                    await addDoc(collection(db, 'users', currentUser.uid, 'metas'), {
+                        title: document.getElementById('meta-title').value,
+                        target: parseFloat(document.getElementById('meta-target').value),
+                        saved: parseFloat(document.getElementById('meta-saved').value),
+                        icon: document.getElementById('meta-icon').value,
+                        color: document.getElementById('meta-color').value,
+                        createdAt: new Date()
+                    });
+
+                } else if (currentTab === 'tab-telefones') {
+                    await addDoc(collection(db, 'users', currentUser.uid, 'telefones'), {
+                        name: document.getElementById('tel-name').value,
+                        number: document.getElementById('tel-number').value,
+                        createdAt: new Date()
+                    });
+
+                } else if (currentTab === 'tab-documentos') {
+                    const title = document.getElementById('doc-title').value;
+                    const file = document.getElementById('doc-file').files[0];
+                    if(file.size > 800000) { // 800KB limite para Firestore string
+                        alert("Arquivo excede 800KB. Por favor, comprima o PDF/Doc ou escolha um menor.");
+                        throw new Error("Arquivo muito grande");
+                    }
+                    const base64 = await fileToBase64(file);
+                    await addDoc(collection(db, 'users', currentUser.uid, 'documentos'), {
+                        title: title, fileName: file.name, fileData: base64, createdAt: new Date()
+                    });
+                }
+                closeModal();
+            } catch (error) {
+                console.error(error);
             } finally {
+                btn.textContent = originalText;
                 btn.disabled = false;
-                btn.innerHTML = originalHTML;
-                lucide.createIcons();
+            }
+        });
+
+
+        // --- LISTENERS FIRESTORE ---
+        function clearListeners() {
+            unsubscribes.forEach(unsub => unsub());
+            unsubscribes = [];
+        }
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+        }
+
+        // Global functions for inline HTML buttons
+        window.deleteItem = async (collectionName, id) => {
+            if(confirm("Tem certeza que deseja apagar?")) {
+                await deleteDoc(doc(db, 'users', currentUser.uid, collectionName, id));
             }
         };
 
-        window.addEvento = async function(e) {
-            e.preventDefault();
-            if(!currentUser) return;
-            const titulo = document.getElementById('evento-titulo').value;
-            const data = document.getElementById('evento-data').value;
-            window.closeModal('modal-evento');
-            try {
-                await addDoc(collection(db, 'artifacts', rootAppId, 'users', currentUser.uid, 'eventos'), { titulo, data, createdAt: Date.now() });
-            } catch(e) { showAlert("Erro", "Falha ao salvar evento."); }
+        window.addMetaFunds = async (id, currentSaved) => {
+            const val = prompt("Quanto deseja adicionar? (Use ponto para centavos. Ex: 50.00)");
+            if(val && !isNaN(val)) {
+                const newVal = parseFloat(currentSaved) + parseFloat(val);
+                await updateDoc(doc(db, 'users', currentUser.uid, 'metas', id), { saved: newVal });
+            }
         };
 
-        window.addMeta = async function(e) {
-            e.preventDefault();
-            if(!currentUser) return;
-            const texto = document.getElementById('meta-texto').value;
-            window.closeModal('modal-meta');
-            try {
-                await addDoc(collection(db, 'artifacts', rootAppId, 'users', currentUser.uid, 'metas'), { texto, feita: false, createdAt: Date.now() });
-            } catch(e) { showAlert("Erro", "Falha ao salvar meta."); }
+        window.downloadDoc = (data, name) => {
+            const a = document.createElement('a');
+            a.href = data;
+            a.download = name;
+            a.click();
         };
 
-        window.deleteItem = async function(colecao, docId, event) {
-            if(event) event.stopPropagation(); 
-            if(!currentUser) return;
-            try {
-                await deleteDoc(doc(db, 'artifacts', rootAppId, 'users', currentUser.uid, colecao, docId));
-            } catch(e) { showAlert("Erro", "Não foi possível apagar."); }
-        };
-
-        window.toggleMeta = async function(docId, estadoAtual) {
-            if(!currentUser) return;
-            try {
-                await updateDoc(doc(db, 'artifacts', rootAppId, 'users', currentUser.uid, 'metas', docId), { feita: !estadoAtual });
-            } catch(e) { showAlert("Erro", "Falha ao atualizar status."); }
-        };
-
-        // ================= RENDERIZAÇÃO =================
-        function renderAlbunsContext() {
-            if (activeAlbumId) renderFotos();
-            else renderAlbunsRoot();
-        }
-
-        function renderAlbunsRoot() {
-            document.getElementById('view-album-detail').classList.add('hidden');
-            document.getElementById('view-albuns-root').classList.remove('hidden');
-
-            document.getElementById('loading-albuns').classList.add('hidden');
-            const grid = document.getElementById('grid-albuns');
-            const empty = document.getElementById('empty-albuns');
-            
-            if(appData.albuns.length === 0) {
-                grid.classList.add('hidden');
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
-            } else {
-                grid.classList.remove('hidden');
-                empty.classList.add('hidden');
-                empty.classList.remove('flex');
-                
-                grid.innerHTML = appData.albuns.map(album => {
-                    const fotosAlbum = appData.fotos.filter(f => f.albumId === album.id);
-                    const capaUrl = fotosAlbum.length > 0 ? fotosAlbum[0].base64 : null;
-                    
-                    return `
-                    <div onclick="window.openAlbum('${album.id}')" class="group bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col active:scale-95 relative">
-                        <div class="aspect-square bg-slate-100 w-full relative overflow-hidden">
-                            ${capaUrl 
-                                ? `<img src="${capaUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
-                                : `<div class="w-full h-full flex items-center justify-center text-slate-300"><i data-lucide="image" class="w-10 h-10"></i></div>`
-                            }
-                            <button onclick="window.deleteItem('albuns', '${album.id}', event)" class="absolute top-2 right-2 bg-white/90 backdrop-blur text-slate-400 p-2 rounded-full hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+        function setupListeners() {
+            const qAlbums = query(collection(db, 'users', currentUser.uid, 'albums'), orderBy("createdAt", "desc"));
+            unsubscribes.push(onSnapshot(qAlbums, (snapshot) => {
+                const list = document.getElementById('albuns-list');
+                list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="col-span-2 text-center text-slate-400 py-10"><i data-lucide="image" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhum álbum adicionado</p></div>`;
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    list.innerHTML += `
+                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-2 shadow-sm relative group overflow-hidden border border-slate-100 dark:border-slate-800">
+                            <img src="${data.image}" class="w-full h-32 object-cover rounded-xl mb-2">
+                            <h3 class="font-medium text-sm px-1 truncate">${data.title}</h3>
+                            <button onclick="deleteItem('albums', '${docSnap.id}')" class="absolute top-4 right-4 bg-black/50 text-white p-1.5 rounded-full hover:bg-rose-500 transition-colors backdrop-blur-sm">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </div>
-                        <div class="p-3.5">
-                            <h3 class="font-bold text-slate-800 text-sm truncate">${album.nome}</h3>
-                            <p class="text-xs text-slate-500 font-medium">${fotosAlbum.length} foto${fotosAlbum.length !== 1 ? 's' : ''}</p>
+                    `;
+                });
+                lucide.createIcons();
+            }));
+
+            const qMetas = query(collection(db, 'users', currentUser.uid, 'metas'), orderBy("createdAt", "desc"));
+            unsubscribes.push(onSnapshot(qMetas, (snapshot) => {
+                const list = document.getElementById('metas-list');
+                list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="target" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhuma meta criada</p></div>`;
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const percent = Math.min(100, Math.max(0, (data.saved / data.target) * 100)).toFixed(1);
+                    list.innerHTML += `
+                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl ${data.color}">
+                                    <i data-lucide="${data.icon}" class="w-6 h-6"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium">${data.title}</h3>
+                                    <p class="text-xs text-slate-400">${formatCurrency(data.saved)} de ${formatCurrency(data.target)}</p>
+                                </div>
+                                <div class="ml-auto flex gap-2">
+                                    <button onclick="addMetaFunds('${docSnap.id}', ${data.saved})" class="text-emerald-500 hover:text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-lg transition-colors">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="deleteItem('metas', '${docSnap.id}')" class="text-rose-400 hover:text-rose-500 p-2 rounded-lg transition-colors">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
+                                <div class="bg-rose-300 h-3 rounded-full transition-all duration-1000" style="width: ${percent}%"></div>
+                            </div>
+                            <p class="text-[10px] text-right mt-1 text-slate-400">${percent}% concluído</p>
                         </div>
-                    </div>
-                `}).join('');
+                    `;
+                });
                 lucide.createIcons();
-            }
-        }
+            }));
 
-        function renderFotos() {
-            document.getElementById('view-albuns-root').classList.add('hidden');
-            document.getElementById('view-album-detail').classList.remove('hidden');
-
-            document.getElementById('loading-fotos').classList.add('hidden');
-            const grid = document.getElementById('grid-fotos');
-            const empty = document.getElementById('empty-fotos');
-            
-            const fotosDesseAlbum = appData.fotos.filter(f => f.albumId === activeAlbumId);
-
-            if(fotosDesseAlbum.length === 0) {
-                grid.classList.add('hidden');
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
-            } else {
-                grid.classList.remove('hidden');
-                empty.classList.add('hidden');
-                empty.classList.remove('flex');
-                
-                grid.innerHTML = fotosDesseAlbum.map(f => `
-                    <div class="relative rounded-2xl overflow-hidden bg-slate-100 group border border-slate-200 shadow-sm break-inside-avoid mb-3">
-                        <img src="${f.base64}" class="w-full h-auto object-cover" loading="lazy">
-                        <button onclick="window.deleteItem('fotos', '${f.id}', event)" class="absolute top-2 right-2 bg-black/50 text-white p-2 rounded-full hover:bg-red-500 transition-colors opacity-0 group-hover:opacity-100 backdrop-blur-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                `).join('');
-                lucide.createIcons();
-            }
-        }
-
-        function renderEventos() {
-            document.getElementById('loading-eventos').classList.add('hidden');
-            const list = document.getElementById('list-eventos');
-            const empty = document.getElementById('empty-eventos');
-
-            if(appData.eventos.length === 0) {
-                list.classList.add('hidden');
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
-            } else {
-                list.classList.remove('hidden');
-                empty.classList.add('hidden');
-                empty.classList.remove('flex');
-
-                const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-
-                list.innerHTML = appData.eventos.map(e => {
-                    const d = new Date(e.data + 'T00:00:00');
-                    return `
-                    <div class="group bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4 transition-all hover:shadow-md relative overflow-hidden">
-                        <div class="bg-indigo-50 text-indigo-600 px-3 py-2 rounded-2xl flex flex-col items-center justify-center min-w-[60px]">
-                            <span class="text-[10px] font-bold uppercase tracking-wider">${meses[d.getMonth()]}</span>
-                            <span class="text-xl font-black">${String(d.getDate()).padStart(2, '0')}</span>
+            const qTels = query(collection(db, 'users', currentUser.uid, 'telefones'), orderBy("createdAt", "desc"));
+            unsubscribes.push(onSnapshot(qTels, (snapshot) => {
+                const list = document.getElementById('telefones-list');
+                list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="phone" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhum telefone</p></div>`;
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    list.innerHTML += `
+                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-medium text-sm">${data.name}</h3>
+                                <p class="text-xs text-slate-500 mt-1">${data.number}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="tel:${data.number}" class="bg-sky-50 dark:bg-sky-900/30 text-sky-500 p-2.5 rounded-xl hover:opacity-80">
+                                    <i data-lucide="phone-call" class="w-5 h-5"></i>
+                                </a>
+                                <button onclick="deleteItem('telefones', '${docSnap.id}')" class="text-slate-400 hover:text-rose-400 p-2.5">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex-1 pr-8">
-                            <h3 class="font-bold text-slate-800 text-[15px] leading-tight">${e.titulo}</h3>
+                    `;
+                });
+                lucide.createIcons();
+            }));
+
+            const qDocs = query(collection(db, 'users', currentUser.uid, 'documentos'), orderBy("createdAt", "desc"));
+            unsubscribes.push(onSnapshot(qDocs, (snapshot) => {
+                const list = document.getElementById('documentos-list');
+                list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="folder" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhum documento salvo</p></div>`;
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    list.innerHTML += `
+                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <div class="bg-rose-50 dark:bg-rose-900/30 text-rose-400 p-2.5 rounded-xl shrink-0">
+                                    <i data-lucide="file-text" class="w-6 h-6"></i>
+                                </div>
+                                <div class="truncate">
+                                    <h3 class="font-medium text-sm truncate">${data.title}</h3>
+                                    <p class="text-[10px] text-slate-400 truncate">${data.fileName}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-1 shrink-0 ml-2">
+                                <button onclick="downloadDoc('${data.fileData}', '${data.fileName}')" class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-400 hover:text-indigo-500 p-2 rounded-lg">
+                                    <i data-lucide="download" class="w-5 h-5"></i>
+                                </button>
+                                <button onclick="deleteItem('documentos', '${docSnap.id}')" class="text-slate-400 hover:text-rose-400 p-2 rounded-lg">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button onclick="window.deleteItem('eventos', '${e.id}')" class="absolute right-4 text-slate-300 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-slate-50 opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                `}).join('');
+                    `;
+                });
                 lucide.createIcons();
-            }
+            }));
         }
-
-        function renderMetas() {
-            document.getElementById('loading-metas').classList.add('hidden');
-            const list = document.getElementById('list-metas');
-            const empty = document.getElementById('empty-metas');
-
-            if(appData.metas.length === 0) {
-                list.classList.add('hidden');
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
-            } else {
-                list.classList.remove('hidden');
-                empty.classList.add('hidden');
-                empty.classList.remove('flex');
-                list.innerHTML = appData.metas.map(m => `
-                    <div class="group bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3 transition-all hover:shadow-md ${m.feita ? 'opacity-50 bg-slate-50/50' : ''}">
-                        <button onclick="window.toggleMeta('${m.id}', ${m.feita})" class="text-${m.feita ? 'indigo-500' : 'slate-300'} hover:text-indigo-600 transition-transform hover:scale-110 shrink-0">
-                            <i data-lucide="${m.feita ? 'check-square' : 'square'}" class="w-6 h-6"></i>
-                        </button>
-                        <span class="flex-1 text-[15px] font-medium ${m.feita ? 'line-through text-slate-500' : 'text-slate-800'}">${m.texto}</span>
-                        <button onclick="window.deleteItem('metas', '${m.id}')" class="text-slate-300 hover:text-red-500 shrink-0 p-2 rounded-full hover:bg-slate-50 transition-colors opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                `).join('');
-                lucide.createIcons();
-            }
-        }
-
     </script>
 </body>
 </html>
