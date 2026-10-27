@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Enlevo</title>
     
-    <!-- PWA Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#eecfd4">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -18,18 +17,8 @@
             theme: {
                 extend: {
                     colors: {
-                        pastel: {
-                            bg: '#fdfbf7',
-                            card: '#ffffff',
-                            primary: '#eecfd4',
-                            secondary: '#d1e8e2',
-                            text: '#5c5c5c'
-                        },
-                        dark: {
-                            bg: '#0f172a',
-                            card: '#1e293b',
-                            text: '#f8fafc'
-                        }
+                        pastel: { bg: '#fdfbf7', card: '#ffffff', primary: '#eecfd4', secondary: '#d1e8e2', text: '#5c5c5c' },
+                        dark: { bg: '#0f172a', card: '#1e293b', text: '#f8fafc' }
                     }
                 }
             }
@@ -59,6 +48,12 @@
                 <div>
                     <input type="password" id="password" placeholder="Senha (Mín. 6 caracteres)" required minlength="6" class="w-full p-4 bg-slate-50 dark:bg-slate-900 border-none rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-300 transition-all text-sm dark:text-white">
                 </div>
+                <!-- Campo de Código da Família (Aparece só no Cadastro) -->
+                <div id="family-code-container" class="hidden">
+                    <p class="text-xs text-slate-400 mb-1 ml-1">Para compartilhar o app, usem o mesmo código.</p>
+                    <input type="text" id="family-code" placeholder="Código da Família (Ex: SILVA26)" class="w-full p-4 bg-rose-50 dark:bg-slate-900 border-none rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-300 transition-all text-sm dark:text-white uppercase font-bold text-rose-500">
+                </div>
+                
                 <button type="submit" id="submit-btn" class="w-full bg-rose-300 text-slate-800 dark:text-slate-900 font-medium p-4 rounded-2xl hover:bg-rose-400 transition-colors shadow-sm">
                     Entrar
                 </button>
@@ -94,7 +89,6 @@
         <!-- Conteúdo Rolável -->
         <main class="flex-1 overflow-y-auto w-full pt-20 pb-24 px-4">
             
-            <!-- Aba: Álbuns -->
             <section id="tab-albuns" class="tab-content space-y-4">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium">Nossos Álbuns</h2>
@@ -102,7 +96,6 @@
                 <div id="albuns-list" class="grid grid-cols-2 gap-4"></div>
             </section>
 
-            <!-- Aba: Metas -->
             <section id="tab-metas" class="tab-content hidden space-y-4">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium">Nossas Metas</h2>
@@ -110,7 +103,6 @@
                 <div id="metas-list" class="space-y-4"></div>
             </section>
 
-            <!-- Aba: Telefones -->
             <section id="tab-telefones" class="tab-content hidden space-y-4">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium">Contatos Importantes</h2>
@@ -118,16 +110,19 @@
                 <div id="telefones-list" class="space-y-3"></div>
             </section>
 
-            <!-- Aba: Documentos -->
             <section id="tab-documentos" class="tab-content hidden space-y-4">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-medium">Meus Documentos</h2>
                 </div>
-                <div class="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 p-3 rounded-xl text-xs mb-4 flex items-start gap-2">
-                    <i data-lucide="info" class="w-4 h-4 mt-0.5 shrink-0"></i>
-                    <p>Limite de tamanho por arquivo: 800KB. Suporta PDF, DOCX, Imagens.</p>
-                </div>
                 <div id="documentos-list" class="space-y-3"></div>
+            </section>
+
+            <!-- Nova Aba: Calendário -->
+            <section id="tab-calendario" class="tab-content hidden space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium">Nossa Agenda</h2>
+                </div>
+                <div id="calendario-list" class="space-y-3"></div>
             </section>
 
         </main>
@@ -137,7 +132,7 @@
             <i data-lucide="plus" class="w-6 h-6"></i>
         </button>
 
-        <!-- Navegação Inferior -->
+        <!-- Navegação Inferior (Agora com 5 botões) -->
         <nav class="fixed bottom-0 left-0 right-0 h-16 bg-pastel-card dark:bg-dark-card border-t border-slate-100 dark:border-slate-800 flex justify-around items-center z-30 transition-colors shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-safe">
             <button class="nav-btn flex flex-col items-center p-2 text-rose-400 transition-colors flex-1" data-target="tab-albuns">
                 <i data-lucide="image" class="w-5 h-5 mb-1"></i>
@@ -147,9 +142,13 @@
                 <i data-lucide="target" class="w-5 h-5 mb-1"></i>
                 <span class="text-[10px] font-medium">Metas</span>
             </button>
+            <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors flex-1" data-target="tab-calendario">
+                <i data-lucide="calendar" class="w-5 h-5 mb-1"></i>
+                <span class="text-[10px] font-medium">Agenda</span>
+            </button>
             <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors flex-1" data-target="tab-telefones">
                 <i data-lucide="phone" class="w-5 h-5 mb-1"></i>
-                <span class="text-[10px] font-medium">Telefones</span>
+                <span class="text-[10px] font-medium">Contatos</span>
             </button>
             <button class="nav-btn flex flex-col items-center p-2 text-slate-400 hover:text-rose-300 transition-colors flex-1" data-target="tab-documentos">
                 <i data-lucide="folder-open" class="w-5 h-5 mb-1"></i>
@@ -176,23 +175,10 @@
         </div>
     </div>
 
-    <!-- Script de Registro do Service Worker para PWA -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').then(registration => {
-            console.log('SW registrado com sucesso:', registration.scope);
-          }).catch(error => {
-            console.log('Falha ao registrar SW:', error);
-          });
-        });
-      }
-    </script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyARJ3xNG0-Nf1MFDJ8f1A7naypnTr5QpLk",
@@ -209,17 +195,14 @@
         
         lucide.createIcons();
         let currentUser = null;
+        let currentFamilyCode = null; // A CHAVE DE COMPARTILHAMENTO
         let currentTab = 'tab-albuns';
         let unsubscribes = [];
 
-        // --- TEMA ESCURO (DARK MODE) ---
+        // --- TEMA ESCURO ---
         const html = document.documentElement;
         const themeBtn = document.getElementById('theme-toggle');
-        
-        if (localStorage.getItem('enlevo-theme') === 'dark') {
-            html.classList.add('dark');
-        }
-        
+        if (localStorage.getItem('enlevo-theme') === 'dark') html.classList.add('dark');
         themeBtn.addEventListener('click', () => {
             html.classList.toggle('dark');
             localStorage.setItem('enlevo-theme', html.classList.contains('dark') ? 'dark' : 'light');
@@ -230,15 +213,25 @@
         const loginScreen = document.getElementById('login-screen');
         const appScreen = document.getElementById('app-screen');
         const authForm = document.getElementById('auth-form');
-        const formTitle = document.getElementById('form-title');
         const submitBtn = document.getElementById('submit-btn');
         const toggleMode = document.getElementById('toggle-mode');
+        const familyCodeContainer = document.getElementById('family-code-container');
+        const familyCodeInput = document.getElementById('family-code');
 
         toggleMode.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
-            formTitle.textContent = isLoginMode ? 'Entrar' : 'Criar Conta';
+            document.getElementById('form-title').textContent = isLoginMode ? 'Entrar' : 'Criar Conta';
             submitBtn.textContent = isLoginMode ? 'Entrar' : 'Cadastrar';
             toggleMode.textContent = isLoginMode ? 'Criar nova conta' : 'Já tem conta? Entrar';
+            
+            // Mostra o campo de Código da Família no cadastro
+            if(isLoginMode) {
+                familyCodeContainer.classList.add('hidden');
+                familyCodeInput.required = false;
+            } else {
+                familyCodeContainer.classList.remove('hidden');
+                familyCodeInput.required = true;
+            }
         });
 
         authForm.addEventListener('submit', async (e) => {
@@ -252,7 +245,10 @@
                 if (isLoginMode) {
                     await signInWithEmailAndPassword(auth, email, password);
                 } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
+                    const code = familyCodeInput.value.trim().toUpperCase();
+                    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                    // Salva o código da família no perfil do usuário
+                    await setDoc(doc(db, 'users', userCred.user.uid), { familyCode: code });
                 }
             } catch (error) {
                 alert("Erro: " + error.message);
@@ -263,15 +259,24 @@
 
         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
+                // Busca o código da família para carregar os dados certos
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists() && userDoc.data().familyCode) {
+                    currentFamilyCode = userDoc.data().familyCode;
+                } else {
+                    currentFamilyCode = user.uid; // fallback caso não tenha código
+                }
+                
                 loginScreen.classList.add('hidden');
                 appScreen.classList.remove('hidden');
                 switchTab('tab-albuns');
-                setupListeners();
+                setupListeners(); // Carrega os dados da família
             } else {
                 currentUser = null;
+                currentFamilyCode = null;
                 loginScreen.classList.remove('hidden');
                 appScreen.classList.add('hidden');
                 clearListeners();
@@ -322,9 +327,7 @@
         function closeModal() {
             modalContent.classList.remove('translate-y-0');
             modalContent.classList.add('translate-y-full');
-            setTimeout(() => {
-                modalOverlay.classList.add('hidden');
-            }, 300);
+            setTimeout(() => { modalOverlay.classList.add('hidden'); }, 300);
         }
 
         function openModal() {
@@ -340,7 +343,7 @@
                 modalTitle.textContent = "Novo Álbum / Foto";
                 formFields.innerHTML = `
                     <input type="text" id="item-title" placeholder="Título (Ex: Viagem, Aniversário)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
-                    <label class="block text-sm text-slate-500">Foto (Max ~800KB recomendando)</label>
+                    <label class="block text-sm text-slate-500">Foto (Max ~800KB)</label>
                     <input type="file" id="item-file" accept="image/*" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none text-sm">
                 `;
             } else if (currentTab === 'tab-metas') {
@@ -348,275 +351,150 @@
                 formFields.innerHTML = `
                     <input type="text" id="meta-title" placeholder="Nome da Meta" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
                     <div class="flex gap-3 mb-3">
-                        <input type="number" id="meta-target" placeholder="Valor Alvo (R$)" required min="1" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
-                        <input type="number" id="meta-saved" placeholder="Já Guardado (R$)" required min="0" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                        <input type="number" id="meta-target" placeholder="Valor Alvo (R$)" required min="1" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border-none outline-none dark:text-white">
+                        <input type="number" id="meta-saved" placeholder="Já Guardado (R$)" required min="0" step="0.01" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border-none outline-none dark:text-white">
                     </div>
-                    <label class="block text-sm text-slate-500 mb-1">Ícone</label>
-                    <select id="meta-icon" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl mb-3 dark:text-white border-none outline-none">
-                        <option value="target">Alvo</option>
-                        <option value="plane">Avião</option>
-                        <option value="car">Carro</option>
-                        <option value="home">Casa</option>
-                        <option value="star">Estrela</option>
-                        <option value="heart">Coração</option>
-                        <option value="shopping-bag">Compras</option>
-                    </select>
-                    <label class="block text-sm text-slate-500 mb-1">Cor do Ícone</label>
-                    <select id="meta-color" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none">
-                        <option value="text-rose-400">Rosa Pastel</option>
-                        <option value="text-sky-400">Azul Pastel</option>
-                        <option value="text-emerald-400">Verde Pastel</option>
-                        <option value="text-amber-400">Amarelo Pastel</option>
-                        <option value="text-purple-400">Roxo Pastel</option>
-                    </select>
+                    <label class="block text-sm text-slate-500 mb-1">Ícone e Cor</label>
+                    <div class="flex gap-3 mb-3">
+                        <select id="meta-icon" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none">
+                            <option value="target">Alvo</option><option value="plane">Avião</option>
+                            <option value="car">Carro</option><option value="home">Casa</option>
+                            <option value="heart">Coração</option>
+                        </select>
+                        <select id="meta-color" class="w-1/2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none">
+                            <option value="text-rose-400">Rosa</option><option value="text-sky-400">Azul</option>
+                            <option value="text-emerald-400">Verde</option>
+                        </select>
+                    </div>
+                `;
+            } else if (currentTab === 'tab-calendario') {
+                modalTitle.textContent = "Novo Evento";
+                formFields.innerHTML = `
+                    <input type="text" id="cal-title" placeholder="Nome do Evento (Ex: Aniversário da Mãe)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
+                    <div class="flex gap-3">
+                        <input type="date" id="cal-date" required class="w-2/3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                        <input type="time" id="cal-time" class="w-1/3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                    </div>
                 `;
             } else if (currentTab === 'tab-telefones') {
                 modalTitle.textContent = "Novo Contato";
                 formFields.innerHTML = `
-                    <input type="text" id="tel-name" placeholder="Nome (Ex: Pediatra, Seguro)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
-                    <input type="tel" id="tel-number" placeholder="Número com DDD" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none">
+                    <input type="text" id="tel-name" placeholder="Nome (Ex: Pediatra)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl mb-3 dark:text-white border-none outline-none">
+                    <input type="tel" id="tel-number" placeholder="Número com DDD" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none">
                 `;
             } else if (currentTab === 'tab-documentos') {
                 modalTitle.textContent = "Novo Documento";
                 formFields.innerHTML = `
-                    <input type="text" id="doc-title" placeholder="Nome do Documento" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-rose-300 dark:text-white border-none outline-none mb-3">
-                    <label class="block text-sm text-slate-500">Arquivo (Max 800KB)</label>
+                    <input type="text" id="doc-title" placeholder="Nome do Documento" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl mb-3 dark:text-white border-none outline-none">
                     <input type="file" id="doc-file" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl dark:text-white border-none outline-none text-sm">
                 `;
             }
         }
 
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function resizeImageBase64(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        const max_size = 800;
-                        if (width > height) {
-                            if (width > max_size) { height *= max_size / width; width = max_size; }
-                        } else {
-                            if (height > max_size) { width *= max_size / height; height = max_size; }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    }
-                    img.src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            });
-        }
+        function fileToBase64(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
+        function resizeImageBase64(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); let width = img.width, height = img.height; const max = 800; if(width>height){if(width>max){height*=max/width;width=max;}}else{if(height>max){width*=max/height;height=max;}} canvas.width=width;canvas.height=height; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,width,height); resolve(canvas.toDataURL('image/jpeg',0.7)); }; img.src = e.target.result; } ;reader.readAsDataURL(file); }); }
 
         dynamicForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = dynamicForm.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
-            btn.textContent = "Salvando...";
-            btn.disabled = true;
+            btn.textContent = "Salvando..."; btn.disabled = true;
 
+            // DADOS AGORA VÃO PARA: families -> [CODIGO_DA_FAMILIA] -> [COLEÇÃO]
             try {
                 if (currentTab === 'tab-albuns') {
-                    const title = document.getElementById('item-title').value;
                     const file = document.getElementById('item-file').files[0];
-                    if(file.size > 2000000) { alert("Imagem muito grande. Escolha uma menor."); throw new Error(); }
+                    if(file.size > 2000000) throw new Error("Imagem muito grande");
                     const base64 = await resizeImageBase64(file);
-                    await addDoc(collection(db, 'users', currentUser.uid, 'albums'), {
-                        title: title, image: base64, createdAt: new Date()
-                    });
+                    await addDoc(collection(db, 'families', currentFamilyCode, 'albums'), { title: document.getElementById('item-title').value, image: base64, createdAt: new Date() });
                 } else if (currentTab === 'tab-metas') {
-                    await addDoc(collection(db, 'users', currentUser.uid, 'metas'), {
-                        title: document.getElementById('meta-title').value,
-                        target: parseFloat(document.getElementById('meta-target').value),
-                        saved: parseFloat(document.getElementById('meta-saved').value),
-                        icon: document.getElementById('meta-icon').value,
-                        color: document.getElementById('meta-color').value,
-                        createdAt: new Date()
+                    await addDoc(collection(db, 'families', currentFamilyCode, 'metas'), {
+                        title: document.getElementById('meta-title').value, target: parseFloat(document.getElementById('meta-target').value), saved: parseFloat(document.getElementById('meta-saved').value),
+                        icon: document.getElementById('meta-icon').value, color: document.getElementById('meta-color').value, createdAt: new Date()
+                    });
+                } else if (currentTab === 'tab-calendario') {
+                    await addDoc(collection(db, 'families', currentFamilyCode, 'calendario'), {
+                        title: document.getElementById('cal-title').value, date: document.getElementById('cal-date').value, time: document.getElementById('cal-time').value || "O dia todo", createdAt: new Date()
                     });
                 } else if (currentTab === 'tab-telefones') {
-                    await addDoc(collection(db, 'users', currentUser.uid, 'telefones'), {
-                        name: document.getElementById('tel-name').value,
-                        number: document.getElementById('tel-number').value,
-                        createdAt: new Date()
-                    });
+                    await addDoc(collection(db, 'families', currentFamilyCode, 'telefones'), { name: document.getElementById('tel-name').value, number: document.getElementById('tel-number').value, createdAt: new Date() });
                 } else if (currentTab === 'tab-documentos') {
-                    const title = document.getElementById('doc-title').value;
                     const file = document.getElementById('doc-file').files[0];
-                    if(file.size > 800000) {
-                        alert("Arquivo excede 800KB. Comprima o PDF/Doc.");
-                        throw new Error("Arquivo grande");
-                    }
+                    if(file.size > 800000) throw new Error("Arquivo excede 800KB");
                     const base64 = await fileToBase64(file);
-                    await addDoc(collection(db, 'users', currentUser.uid, 'documentos'), {
-                        title: title, fileName: file.name, fileData: base64, createdAt: new Date()
-                    });
+                    await addDoc(collection(db, 'families', currentFamilyCode, 'documentos'), { title: document.getElementById('doc-title').value, fileName: file.name, fileData: base64, createdAt: new Date() });
                 }
                 closeModal();
-            } catch (error) {
-                console.error(error);
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
+            } catch (error) { alert(error.message); } finally { btn.textContent = originalText; btn.disabled = false; }
         });
 
-        function clearListeners() {
-            unsubscribes.forEach(unsub => unsub());
-            unsubscribes = [];
-        }
-
-        function formatCurrency(val) {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-        }
+        function clearListeners() { unsubscribes.forEach(unsub => unsub()); unsubscribes = []; }
+        function formatCurrency(val) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val); }
 
         window.deleteItem = async (collectionName, id) => {
-            if(confirm("Tem certeza que deseja apagar?")) {
-                await deleteDoc(doc(db, 'users', currentUser.uid, collectionName, id));
-            }
+            if(confirm("Tem certeza que deseja apagar?")) await deleteDoc(doc(db, 'families', currentFamilyCode, collectionName, id));
         };
-
         window.addMetaFunds = async (id, currentSaved) => {
-            const val = prompt("Quanto deseja adicionar? (Use ponto para centavos. Ex: 50.00)");
-            if(val && !isNaN(val)) {
-                const newVal = parseFloat(currentSaved) + parseFloat(val);
-                await updateDoc(doc(db, 'users', currentUser.uid, 'metas', id), { saved: newVal });
-            }
+            const val = prompt("Quanto deseja adicionar? (Use ponto. Ex: 50.00)");
+            if(val && !isNaN(val)) await updateDoc(doc(db, 'families', currentFamilyCode, 'metas', id), { saved: parseFloat(currentSaved) + parseFloat(val) });
         };
-
-        window.downloadDoc = (data, name) => {
-            const a = document.createElement('a');
-            a.href = data;
-            a.download = name;
-            a.click();
-        };
+        window.downloadDoc = (data, name) => { const a = document.createElement('a'); a.href = data; a.download = name; a.click(); };
 
         function setupListeners() {
-            const qAlbums = query(collection(db, 'users', currentUser.uid, 'albums'), orderBy("createdAt", "desc"));
+            // Listeners buscam dados a partir do currentFamilyCode
+            const qAlbums = query(collection(db, 'families', currentFamilyCode, 'albums'), orderBy("createdAt", "desc"));
             unsubscribes.push(onSnapshot(qAlbums, (snapshot) => {
-                const list = document.getElementById('albuns-list');
-                list.innerHTML = '';
-                if(snapshot.empty) list.innerHTML = `<div class="col-span-2 text-center text-slate-400 py-10"><i data-lucide="image" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhum álbum adicionado</p></div>`;
+                const list = document.getElementById('albuns-list'); list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="col-span-2 text-center text-slate-400 py-10"><i data-lucide="image" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Vazio</p></div>`;
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    list.innerHTML += `
-                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-2 shadow-sm relative group overflow-hidden border border-slate-100 dark:border-slate-800">
-                            <img src="${data.image}" class="w-full h-32 object-cover rounded-xl mb-2">
-                            <h3 class="font-medium text-sm px-1 truncate">${data.title}</h3>
-                            <button onclick="deleteItem('albums', '${docSnap.id}')" class="absolute top-4 right-4 bg-black/50 text-white p-1.5 rounded-full hover:bg-rose-500 transition-colors backdrop-blur-sm">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    `;
+                    list.innerHTML += `<div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-2 shadow-sm relative overflow-hidden"><img src="${data.image}" class="w-full h-32 object-cover rounded-xl mb-2"><h3 class="font-medium text-sm px-1 truncate">${data.title}</h3><button onclick="deleteItem('albums', '${docSnap.id}')" class="absolute top-4 right-4 bg-black/50 text-white p-1.5 rounded-full hover:bg-rose-500 backdrop-blur-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
                 });
                 lucide.createIcons();
             }));
 
-            const qMetas = query(collection(db, 'users', currentUser.uid, 'metas'), orderBy("createdAt", "desc"));
+            const qMetas = query(collection(db, 'families', currentFamilyCode, 'metas'), orderBy("createdAt", "desc"));
             unsubscribes.push(onSnapshot(qMetas, (snapshot) => {
-                const list = document.getElementById('metas-list');
-                list.innerHTML = '';
+                const list = document.getElementById('metas-list'); list.innerHTML = '';
                 if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="target" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhuma meta</p></div>`;
                 snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const percent = Math.min(100, Math.max(0, (data.saved / data.target) * 100)).toFixed(1);
-                    list.innerHTML += `
-                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 relative">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl ${data.color}">
-                                    <i data-lucide="${data.icon}" class="w-6 h-6"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-medium">${data.title}</h3>
-                                    <p class="text-xs text-slate-400">${formatCurrency(data.saved)} de ${formatCurrency(data.target)}</p>
-                                </div>
-                                <div class="ml-auto flex gap-2">
-                                    <button onclick="addMetaFunds('${docSnap.id}', ${data.saved})" class="text-emerald-500 hover:text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-lg transition-colors">
-                                        <i data-lucide="plus" class="w-4 h-4"></i>
-                                    </button>
-                                    <button onclick="deleteItem('metas', '${docSnap.id}')" class="text-rose-400 hover:text-rose-500 p-2 rounded-lg transition-colors">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden">
-                                <div class="bg-rose-300 h-3 rounded-full transition-all duration-1000" style="width: ${percent}%"></div>
-                            </div>
-                            <p class="text-[10px] text-right mt-1 text-slate-400">${percent}% concluído</p>
-                        </div>
-                    `;
+                    const data = docSnap.data(); const percent = Math.min(100, Math.max(0, (data.saved / data.target) * 100)).toFixed(1);
+                    list.innerHTML += `<div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800"><div class="flex items-center gap-3 mb-3"><div class="bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl ${data.color}"><i data-lucide="${data.icon}" class="w-6 h-6"></i></div><div><h3 class="font-medium">${data.title}</h3><p class="text-xs text-slate-400">${formatCurrency(data.saved)} de ${formatCurrency(data.target)}</p></div><div class="ml-auto flex gap-2"><button onclick="addMetaFunds('${docSnap.id}', ${data.saved})" class="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button><button onclick="deleteItem('metas', '${docSnap.id}')" class="text-rose-400 p-2 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div><div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-3"><div class="bg-rose-300 h-3 rounded-full transition-all duration-1000" style="width: ${percent}%"></div></div></div>`;
                 });
                 lucide.createIcons();
             }));
 
-            const qTels = query(collection(db, 'users', currentUser.uid, 'telefones'), orderBy("createdAt", "desc"));
+            // Calendário (Novo) - Ordenado pela Data do Evento
+            const qCal = query(collection(db, 'families', currentFamilyCode, 'calendario'), orderBy("date", "asc"));
+            unsubscribes.push(onSnapshot(qCal, (snapshot) => {
+                const list = document.getElementById('calendario-list'); list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="calendar" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhum evento agendado</p></div>`;
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const [ano, mes, dia] = data.date.split('-'); // Formatando data padrão HTML
+                    list.innerHTML += `<div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center"><div class="flex items-center gap-4"><div class="bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex flex-col items-center justify-center p-2 rounded-xl min-w-[50px]"><span class="text-[10px] font-bold uppercase">${mes}</span><span class="text-lg font-bold leading-none">${dia}</span></div><div><h3 class="font-medium text-sm">${data.title}</h3><p class="text-xs text-slate-500 mt-1 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${data.time}</p></div></div><button onclick="deleteItem('calendario', '${docSnap.id}')" class="text-slate-400 hover:text-rose-400 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
+                });
+                lucide.createIcons();
+            }));
+
+            const qTels = query(collection(db, 'families', currentFamilyCode, 'telefones'), orderBy("createdAt", "desc"));
             unsubscribes.push(onSnapshot(qTels, (snapshot) => {
-                const list = document.getElementById('telefones-list');
-                list.innerHTML = '';
-                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="phone" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhum telefone</p></div>`;
+                const list = document.getElementById('telefones-list'); list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="phone" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Vazio</p></div>`;
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    list.innerHTML += `
-                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                            <div>
-                                <h3 class="font-medium text-sm">${data.name}</h3>
-                                <p class="text-xs text-slate-500 mt-1">${data.number}</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <a href="tel:${data.number}" class="bg-sky-50 dark:bg-sky-900/30 text-sky-500 p-2.5 rounded-xl hover:opacity-80">
-                                    <i data-lucide="phone-call" class="w-5 h-5"></i>
-                                </a>
-                                <button onclick="deleteItem('telefones', '${docSnap.id}')" class="text-slate-400 hover:text-rose-400 p-2.5">
-                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    list.innerHTML += `<div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center"><div><h3 class="font-medium text-sm">${data.name}</h3><p class="text-xs text-slate-500 mt-1">${data.number}</p></div><div class="flex gap-2"><a href="tel:${data.number}" class="bg-sky-50 text-sky-500 p-2.5 rounded-xl"><i data-lucide="phone-call" class="w-5 h-5"></i></a><button onclick="deleteItem('telefones', '${docSnap.id}')" class="text-slate-400 p-2.5"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div></div>`;
                 });
                 lucide.createIcons();
             }));
 
-            const qDocs = query(collection(db, 'users', currentUser.uid, 'documentos'), orderBy("createdAt", "desc"));
+            const qDocs = query(collection(db, 'families', currentFamilyCode, 'documentos'), orderBy("createdAt", "desc"));
             unsubscribes.push(onSnapshot(qDocs, (snapshot) => {
-                const list = document.getElementById('documentos-list');
-                list.innerHTML = '';
-                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="folder" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Nenhum documento salvo</p></div>`;
+                const list = document.getElementById('documentos-list'); list.innerHTML = '';
+                if(snapshot.empty) list.innerHTML = `<div class="text-center text-slate-400 py-10"><i data-lucide="folder" class="w-12 h-12 mx-auto mb-2 opacity-30"></i><p class="text-sm">Vazio</p></div>`;
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    list.innerHTML += `
-                        <div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                            <div class="flex items-center gap-3 overflow-hidden">
-                                <div class="bg-rose-50 dark:bg-rose-900/30 text-rose-400 p-2.5 rounded-xl shrink-0">
-                                    <i data-lucide="file-text" class="w-6 h-6"></i>
-                                </div>
-                                <div class="truncate">
-                                    <h3 class="font-medium text-sm truncate">${data.title}</h3>
-                                    <p class="text-[10px] text-slate-400 truncate">${data.fileName}</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-1 shrink-0 ml-2">
-                                <button onclick="downloadDoc('${data.fileData}', '${data.fileName}')" class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-400 hover:text-indigo-500 p-2 rounded-lg">
-                                    <i data-lucide="download" class="w-5 h-5"></i>
-                                </button>
-                                <button onclick="deleteItem('documentos', '${docSnap.id}')" class="text-slate-400 hover:text-rose-400 p-2 rounded-lg">
-                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    list.innerHTML += `<div class="bg-pastel-card dark:bg-dark-card rounded-2xl p-4 shadow-sm border border-slate-100 flex justify-between items-center"><div class="flex items-center gap-3 overflow-hidden"><div class="bg-rose-50 text-rose-400 p-2.5 rounded-xl shrink-0"><i data-lucide="file-text" class="w-6 h-6"></i></div><div class="truncate"><h3 class="font-medium text-sm truncate">${data.title}</h3><p class="text-[10px] text-slate-400 truncate">${data.fileName}</p></div></div><div class="flex gap-1 shrink-0 ml-2"><button onclick="downloadDoc('${data.fileData}', '${data.fileName}')" class="bg-indigo-50 text-indigo-400 p-2 rounded-lg"><i data-lucide="download" class="w-5 h-5"></i></button><button onclick="deleteItem('documentos', '${docSnap.id}')" class="text-slate-400 p-2 rounded-lg"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div></div>`;
                 });
                 lucide.createIcons();
             }));
