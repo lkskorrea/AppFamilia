@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>App Família</title>
   <style>
-    /* Variáveis de Cores - Tons Pastéis */
     :root {
       --primary: #a2d2ff; 
       --secondary: #ffafcc; 
@@ -14,148 +13,79 @@
       --text-dark: #5c5c5c;
       --card-bg: #ffffff;
     }
-
     * { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-dark);
-      min-height: 100vh;
+      margin: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color); color: var(--text-dark); min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
-
     /* Ecrã de Login */
     #login-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100vh; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
     }
-
     .login-card {
-      background: var(--card-bg);
-      padding: 40px 30px;
-      border-radius: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      text-align: center;
-      width: 80%;
-      max-width: 320px;
+      background: var(--card-bg); padding: 40px 30px; border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); text-align: center; width: 80%; max-width: 320px;
     }
-
     .login-card h2 { margin-top: 0; color: #8e9aaf; }
-    
     input, select {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border-radius: 12px;
-      border: 1px solid #eee;
-      font-size: 16px;
-      outline: none;
-      background: #fafafa;
+      width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
+      border: 1px solid #eee; font-size: 16px; outline: none; background: #fafafa;
     }
-
     button.btn-primary {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border-radius: 12px;
-      border: none;
-      background-color: var(--primary);
-      color: #fff;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(162, 210, 255, 0.4);
+      width: 100%; padding: 14px; margin-top: 10px; border-radius: 12px; border: none;
+      background-color: var(--primary); color: #fff; font-size: 16px; font-weight: bold;
+      cursor: pointer; box-shadow: 0 4px 15px rgba(162, 210, 255, 0.4);
     }
-    
     button:disabled { background-color: #ccc; cursor: not-allowed; }
 
     /* Aplicação Principal */
-    #main-app {
-      display: none;
-      padding: 20px;
-      padding-bottom: 90px;
-    }
-
+    #main-app { display: none; padding: 20px; padding-bottom: 90px; }
     .screen { display: none; }
     .screen.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     .header { margin-bottom: 25px; margin-top: 10px; }
     .greeting { font-size: 1.6em; font-weight: 700; color: var(--text-dark); }
     .greeting span { color: #8e9aaf; }
 
     /* Grelha de Menus */
     .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    
     .menu-card {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      cursor: pointer;
-      border: 1px solid #f0f0f0;
+      background: var(--card-bg); padding: 20px; border-radius: 20px; text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #f0f0f0;
     }
     .menu-card .icon { font-size: 30px; margin-bottom: 10px; }
     .menu-card .title { font-weight: 600; font-size: 14px; }
-
-    .c-cal { background-color: #eaf4f4; }
-    .c-chat { background-color: #f8edeb; }
-    .c-meta { background-color: #e2ece9; }
-    .c-comp { background-color: #fff1e6; }
-    .c-aniv { background-color: #fde2e4; }
-    .c-tel { background-color: #e2eafc; }
-    .c-fot { background-color: #ffecd1; }
-    .c-doc { background-color: #e8e8e4; }
+    .c-cal { background-color: #eaf4f4; } .c-chat { background-color: #f8edeb; }
+    .c-meta { background-color: #e2ece9; } .c-comp { background-color: #fff1e6; }
+    .c-aniv { background-color: #fde2e4; } .c-tel { background-color: #e2eafc; }
+    .c-fot { background-color: #ffecd1; } .c-doc { background-color: #e8e8e4; }
 
     /* Elementos de Lista */
     .list-item {
-      background: var(--card-bg);
-      padding: 15px;
-      border-radius: 15px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;
     }
     .list-item-content h4 { margin: 0 0 5px 0; font-size: 16px; }
     .list-item-content p { margin: 0; font-size: 13px; color: #888; }
-    
-    .btn-action {
-      background: #25D366; color: white; text-decoration: none; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; display: inline-block;
-    }
+    .btn-action { background: #25D366; color: white; text-decoration: none; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: bold; display: inline-block; }
     .btn-download { background: var(--primary); }
 
     /* Calendário */
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
     .cal-header { text-align: center; font-weight: bold; font-size: 12px; color: #aaa; margin-bottom: 10px;}
-    .cal-day {
-      background: white; aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 5px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); position: relative;
-    }
-    .cal-day.has-event::after {
-      content: ''; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; position: absolute; bottom: 6px;
-    }
+    .cal-day { background: white; aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 5px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); position: relative; }
+    .cal-day.has-event::after { content: ''; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; position: absolute; bottom: 6px; }
 
     /* Metas */
     .progress-container { width: 100%; background-color: #f0f0f0; border-radius: 10px; height: 8px; margin-top: 10px; overflow: hidden; }
     .progress-bar { height: 100%; background-color: var(--accent); border-radius: 10px; }
 
     /* Menu Flutuante */
-    .pill-nav {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; padding: 10px 20px; border-radius: 50px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; gap: 15px; z-index: 1000;
-    }
-    .nav-item {
-      width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; color: #ccc; transition: all 0.3s ease;
-    }
+    .pill-nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; padding: 10px 20px; border-radius: 50px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); display: flex; gap: 15px; z-index: 1000; }
+    .nav-item { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; color: #ccc; transition: all 0.3s ease; }
     .nav-item.active { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(162, 210, 255, 0.5); }
-    
     .form-group { background: white; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
 
     /* Galeria Fotos */
@@ -209,7 +139,7 @@
       <div class="form-group">
         <input type="text" id="meta-nome" placeholder="Nome da Meta (ex: Férias)">
         <input type="text" id="meta-icone" placeholder="Ícone (um emoji 🏖️)">
-        <input type="number" id="meta-total" placeholder="Valor Total Necessário">
+        <input type="number" id="meta-total" placeholder="Valor Total">
         <input type="number" id="meta-guardado" placeholder="Valor Já Guardado">
         <button class="btn-primary" onclick="salvarMeta()">Adicionar Meta</button>
       </div>
@@ -231,7 +161,7 @@
     <div id="screen-aniversarios" class="screen">
       <h3>Aniversários</h3>
       <div class="form-group">
-        <input type="text" id="aniv-nome" placeholder="Nome do Aniversariante">
+        <input type="text" id="aniv-nome" placeholder="Nome">
         <select id="aniv-dia"></select>
         <select id="aniv-mes">
           <option value="Janeiro">Janeiro</option><option value="Fevereiro">Fevereiro</option><option value="Março">Março</option><option value="Abril">Abril</option><option value="Maio">Maio</option><option value="Junho">Junho</option><option value="Julho">Julho</option><option value="Agosto">Agosto</option><option value="Setembro">Setembro</option><option value="Outubro">Outubro</option><option value="Novembro">Novembro</option><option value="Dezembro">Dezembro</option>
@@ -261,7 +191,7 @@
       </div>
     </div>
 
-    <!-- Fotos (NOVO) -->
+    <!-- Fotos -->
     <div id="screen-fotos" class="screen">
       <h3>Álbuns de Fotos</h3>
       <div class="form-group">
@@ -273,12 +203,12 @@
       <div id="lista-fotos" class="galeria-grid"></div>
     </div>
 
-    <!-- Documentos (NOVO) -->
+    <!-- Documentos -->
     <div id="screen-documentos" class="screen">
       <h3>Documentos</h3>
       <div class="form-group">
         <input type="file" id="doc-file" style="padding: 10px; background: white;">
-        <input type="text" id="doc-nome" placeholder="Nome do documento (ex: Conta da Luz)">
+        <input type="text" id="doc-nome" placeholder="Nome do documento">
         <button class="btn-primary" id="btn-doc" onclick="salvarDocumento()">Guardar Documento</button>
         <p id="doc-status" style="font-size: 12px; color: #888; text-align: center; display: none;">A processar o upload...</p>
       </div>
@@ -297,7 +227,6 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    // Importação do Firebase Storage
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     const firebaseConfig = {
@@ -310,8 +239,18 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    
+    // Inicia Firestore (Garante que as mensagens funcionam sempre)
     const db = getFirestore(app);
-    const storage = getStorage(app);
+    
+    // Inicia Storage de forma segura para não bloquear o resto
+    let storage = null;
+    try {
+      storage = getStorage(app);
+    } catch (e) {
+      console.error("Storage ainda não está pronto:", e);
+    }
+
     let nomeAtual = "";
 
     const selectDia = document.getElementById('aniv-dia');
@@ -342,7 +281,7 @@
       if(navItem) navItem.classList.add('active');
     }
 
-    /* Lógica dos Módulos (Calendário, Metas, etc.) - Inalterada */
+    /* FIRESTORE: CALENDÁRIO, METAS, CHAT (Protegidos) */
     window.gerarCalendario = function() {
       const hoje = new Date(); const mes = hoje.getMonth(); const ano = hoje.getFullYear();
       const diasNoMes = new Date(ano, mes + 1, 0).getDate(); const primeiroDia = new Date(ano, mes, 1).getDay();
@@ -350,10 +289,12 @@
       for(let i = 0; i < primeiroDia; i++) body.innerHTML += `<div></div>`;
       for(let dia = 1; dia <= diasNoMes; dia++) body.innerHTML += `<div class="cal-day" id="cal-dia-${dia}" onclick="adicionarEvento(${dia}, ${mes}, ${ano})">${dia}</div>`;
     }
+    
     window.adicionarEvento = async function(dia, mes, ano) {
       const desc = prompt(`Evento para dia ${dia}:`);
       if(desc) await addDoc(collection(db, "calendario"), { dia, mes, ano, desc, autor: nomeAtual, data: serverTimestamp() });
     }
+    
     onSnapshot(collection(db, "calendario"), (snap) => {
       const hoje = new Date(); const divEventos = document.getElementById('calendar-events'); divEventos.innerHTML = "<h4>Eventos deste mês</h4>";
       document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('has-event'));
@@ -369,8 +310,12 @@
     window.salvarMeta = async function() {
       const nome = document.getElementById('meta-nome').value; const icone = document.getElementById('meta-icone').value || "🎯";
       const total = parseFloat(document.getElementById('meta-total').value); const guardado = parseFloat(document.getElementById('meta-guardado').value);
-      if(nome && total > 0) { await addDoc(collection(db, "metas"), { nome, icone, total, guardado, data: serverTimestamp() }); document.getElementById('meta-nome').value = ''; document.getElementById('meta-total').value = ''; document.getElementById('meta-guardado').value = ''; }
+      if(nome && total > 0) { 
+        await addDoc(collection(db, "metas"), { nome, icone, total, guardado, data: serverTimestamp() }); 
+        document.getElementById('meta-nome').value = ''; document.getElementById('meta-total').value = ''; document.getElementById('meta-guardado').value = ''; 
+      }
     }
+    
     onSnapshot(query(collection(db, "metas"), orderBy("data", "desc")), (snap) => {
       const div = document.getElementById('lista-metas'); div.innerHTML = "";
       snap.forEach(doc => {
@@ -422,10 +367,10 @@
       div.scrollTop = div.scrollHeight;
     });
 
-    /* --- PARTE 3: FOTOS E DOCUMENTOS COM STORAGE --- */
-    
-    // Fotos
+    /* FIREBASE STORAGE: FOTOS E DOCS */
     window.salvarFoto = async function() {
+      if(!storage) return alert("O sistema de ficheiros ainda está a iniciar. Tente novamente em instantes.");
+      
       const fileInput = document.getElementById('foto-file');
       const legenda = document.getElementById('foto-legenda').value || "Sem nome";
       const file = fileInput.files[0];
@@ -439,11 +384,9 @@
         const storageRef = ref(storage, 'fotos/' + Date.now() + '_' + file.name);
         await uploadBytes(storageRef, file);
         const url = await getDownloadURL(storageRef);
-        
         await addDoc(collection(db, "fotos"), { url, legenda, autor: nomeAtual, data: serverTimestamp() });
-        
         fileInput.value = ''; document.getElementById('foto-legenda').value = '';
-      } catch (error) { alert("Erro ao enviar imagem. Verificou as regras do Firebase Storage?"); }
+      } catch (error) { alert("Erro ao enviar imagem. As regras do Storage podem ainda estar a ser propagadas."); }
       
       document.getElementById('foto-status').style.display = 'none';
       document.getElementById('btn-foto').disabled = false;
@@ -457,8 +400,9 @@
       });
     });
 
-    // Documentos
     window.salvarDocumento = async function() {
+      if(!storage) return alert("O sistema de ficheiros ainda está a iniciar. Tente novamente em instantes.");
+      
       const fileInput = document.getElementById('doc-file');
       const nomeDoc = document.getElementById('doc-nome').value || "Documento";
       const file = fileInput.files[0];
@@ -472,11 +416,9 @@
         const storageRef = ref(storage, 'documentos/' + Date.now() + '_' + file.name);
         await uploadBytes(storageRef, file);
         const url = await getDownloadURL(storageRef);
-        
         await addDoc(collection(db, "documentos"), { url, nomeDoc, nomeOriginal: file.name, autor: nomeAtual, data: serverTimestamp() });
-        
         fileInput.value = ''; document.getElementById('doc-nome').value = '';
-      } catch (error) { alert("Erro ao enviar documento. Verificou as regras do Firebase Storage?"); }
+      } catch (error) { alert("Erro ao enviar documento. As regras do Storage podem ainda estar a ser propagadas."); }
       
       document.getElementById('doc-status').style.display = 'none';
       document.getElementById('btn-doc').disabled = false;
@@ -486,7 +428,7 @@
       const div = document.getElementById('lista-documentos'); div.innerHTML = "";
       snap.forEach(doc => {
         const d = doc.data();
-        div.innerHTML += `<div class="list-item"><div class="list-item-content"><h4>📄 ${d.nomeDoc}</h4><p>Por ${d.autor}</p></div><a href="${d.url}" target="_blank" class="btn-action btn-download">Abrir / Baixar</a></div>`;
+        div.innerHTML += `<div class="list-item"><div class="list-item-content"><h4>📄 ${d.nomeDoc}</h4><p>Por ${d.autor}</p></div><a href="${d.url}" target="_blank" class="btn-action btn-download">Baixar</a></div>`;
       });
     });
 
